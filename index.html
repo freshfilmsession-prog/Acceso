@@ -3,67 +3,92 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Yusen Logistics · Registro de acceso</title>
+<title>Yusen Logistics · Control de accesos</title>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-:root{--navy:#0A1F44;--navy2:#13346F;--orange:#F47B20;--white:#fff;--soft:#EEF2F8;--line:#D5DDEA;--ok:#1F9D63}
+:root{--navy:#0A1F44;--navy2:#13346F;--orange:#F47B20;--bg:#EEF2F8;--line:#D5DDEA;--ok:#1F9D63}
 *{box-sizing:border-box;margin:0}
-body{font-family:Archivo,system-ui,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;display:flex;flex-direction:column}
-header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:4px solid var(--orange)}
-.logo{font-weight:900;font-size:26px;letter-spacing:.5px}.logo b{color:var(--orange)}.logo small{display:block;font-weight:600;font-size:11px;letter-spacing:3px;opacity:.7}
-.clock{text-align:right;font-weight:600;font-size:14px;opacity:.9}
-main{flex:1;display:flex;align-items:center;justify-content:center;padding:22px}
-.view{display:none;width:100%;max-width:760px}.view.on{display:block}
-h1{font-size:clamp(28px,6vw,46px);font-weight:900;line-height:1.05;margin-bottom:8px}
-.sub{opacity:.75;margin-bottom:26px}
-.grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
-.big{border:0;border-radius:16px;padding:30px 18px;font:800 20px Archivo;cursor:pointer;color:var(--navy);background:var(--white);display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform .15s}
-.big:hover{transform:translateY(-3px)}.big svg{width:54px;height:54px}.big.or{background:var(--orange);color:var(--white)}
-.big small{font-weight:600;font-size:13px;opacity:.75}
-.card{background:var(--white);color:var(--navy);border-radius:18px;padding:26px}
-label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
-input,select,textarea{width:100%;padding:14px;border:2px solid var(--line);border-radius:10px;font:600 16px Archivo;color:var(--navy);background:#fff}
-input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
-.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:6px}
-.seg button{border:0;background:none;padding:12px;border-radius:9px;font:800 15px Archivo;color:var(--navy);cursor:pointer}
-.seg button.on{background:var(--navy);color:#fff}.seg button.on.out{background:var(--orange)}
-.btn{width:100%;margin-top:20px;border:0;border-radius:12px;padding:17px;font:800 18px Archivo;background:var(--orange);color:#fff;cursor:pointer}
-.btn:disabled{opacity:.5}
-.link{background:none;border:0;color:inherit;font:600 14px Archivo;opacity:.8;cursor:pointer;margin-top:16px;text-decoration:underline}
-.dt{display:inline-block;background:var(--soft);padding:8px 14px;border-radius:30px;font-weight:600;font-size:14px;margin-bottom:6px}
-.err{color:#C62828;font-weight:600;margin-top:12px;min-height:20px}
-.done{text-align:center;background:var(--white);color:var(--navy);border-radius:18px;padding:40px 26px}
-.done .tick{width:84px;height:84px;border-radius:50%;background:var(--ok);margin:0 auto 18px;display:grid;place-items:center}
-.done .tick svg{width:46px;height:46px}.done p{font-size:19px;line-height:1.45;max-width:520px;margin:0 auto 10px}
-.done.out .tick{background:var(--orange)}
-.langs button{font-size:18px}
-footer{padding:12px;text-align:center;font-size:12px;opacity:.6}
-footer button{color:#fff}
-/* staff */
-#v-staff{max-width:1100px;color:var(--navy)}
-.panel{background:var(--soft);border-radius:18px;padding:22px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px}
-.kpi{background:var(--white);border-radius:14px;padding:16px;border-left:6px solid var(--navy)}.kpi.o{border-color:var(--orange)}.kpi.g{border-color:var(--ok)}
-.kpi b{font-size:36px;font-weight:900;display:block}.kpi span{font-size:13px;font-weight:600;opacity:.7}
-.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:6px 0 14px}.filters div{flex:1;min-width:130px}.filters label{margin:0 0 4px}
-.filters button{padding:14px 16px;border:0;border-radius:10px;font:800 14px Archivo;background:var(--navy);color:#fff;cursor:pointer}
-.tw{overflow-x:auto;background:#fff;border-radius:12px}
-table{width:100%;border-collapse:collapse;font-size:14px}th{background:var(--navy);color:#fff;text-align:left;padding:11px;font-weight:600;white-space:nowrap}
-td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
-.tag{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800}.t-v{background:#FFE6D2;color:#B34E00}.t-w{background:#DCE6F8;color:var(--navy2)}
-.in{color:var(--ok);font-weight:800}.h2{font-size:20px;font-weight:900;margin:18px 0 10px}
-#qrbox{background:#fff;display:inline-block;padding:14px;border-radius:12px}
-.pin{max-width:320px;margin:auto;text-align:center}
-@media(max-width:560px){.grid{grid-template-columns:1fr}}
-@media print{body{background:#fff}header,footer,.filters,.noprint{display:none!important}#v-staff{color:#000}}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+body{font-family:Archivo,system-ui,sans-serif;background:var(--bg);color:var(--navy);min-height:100vh}
+.top{background:var(--navy);color:#fff;padding:14px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:4px solid var(--orange)}
+.logo{font-weight:900;font-size:22px}.logo b{color:var(--orange)}.logo span{margin-left:14px;padding-left:14px;border-left:2px solid var(--orange);font-weight:600;font-size:14px;opacity:.8}
+.live{display:flex;align-items:center;gap:14px;font-weight:600;font-size:13px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#3DDC84;margin-right:6px;animation:p 1.6s infinite}
+@keyframes p{50%{opacity:.3}}
+.wrap{max-width:1280px;margin:0 auto;padding:22px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:22px}
+.kpi{background:#fff;border-radius:14px;padding:18px;border-top:5px solid var(--navy)}.kpi.g{border-color:var(--ok)}.kpi.o{border-color:var(--orange)}
+.kpi b{display:block;font-size:42px;font-weight:900;line-height:1;margin-bottom:4px}.kpi span{font-size:13px;font-weight:600;opacity:.7}
+.box{background:#fff;border-radius:16px;padding:20px;margin-bottom:22px}
+h2{font-size:19px;font-weight:900;margin-bottom:12px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{background:var(--navy);color:#fff;text-align:left;padding:11px;font-weight:600;white-space:nowrap}
+td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}tr:last-child td{border:0}
+.tag{padding:3px 11px;border-radius:20px;font-size:12px;font-weight:800}.tv{background:#FFE6D2;color:#B34E00}.tn{background:#DCE6F8;color:var(--navy2)}.te{background:var(--navy);color:#fff}
+.in{color:var(--ok);font-weight:800}
+.filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-bottom:14px}.filters div{flex:1;min-width:130px}
+label{display:block;font-weight:600;font-size:13px;margin-bottom:4px}
+input,select{width:100%;padding:12px;border:2px solid var(--line);border-radius:10px;font:600 15px Archivo;color:var(--navy);background:#fff}
+input:focus,select:focus,button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+button{font-family:Archivo}.act{padding:13px 16px;border:0;border-radius:10px;font-weight:800;font-size:14px;background:var(--navy);color:#fff;cursor:pointer}.act.or{background:var(--orange)}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.qrc{border:2px solid var(--line);border-radius:14px;padding:16px;text-align:center}.qrc small{display:block;opacity:.7;margin-bottom:10px}
+.qb{display:inline-block;padding:10px;background:#fff;border:1px solid var(--line);border-radius:10px}
+.qa{display:flex;gap:8px;margin:12px 0 6px}.qa button{flex:1;padding:10px;border:0;border-radius:9px;font-weight:800;background:var(--navy);color:#fff;cursor:pointer}.qa .or{background:var(--orange)}
+.qrc code{font-size:11px;word-break:break-all;opacity:.6}
+#login{min-height:100vh;display:grid;place-items:center;padding:20px}
+.lc{background:#fff;border-radius:18px;padding:30px;width:100%;max-width:340px;text-align:center;border-top:6px solid var(--orange)}
+.err{color:#C62828;font-weight:600;min-height:22px;margin:8px 0}
+#app{display:none}
+.warn{display:none;background:#FFF1E6;border:2px solid var(--orange);border-radius:12px;padding:12px 16px;margin-bottom:16px;font-weight:600;font-size:14px}
+@media print{.top,.filters,.noprint{display:none!important}body{background:#fff}.box{padding:0}}
+
+/* ===== registro (QR) ===== */
+
+
+#reg *{box-sizing:border-box;margin:0}
+#reg{font-family:Archivo,system-ui,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;display:flex;flex-direction:column}
+#reg header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:4px solid var(--orange)}
+#reg .logo{font-weight:900;font-size:26px;letter-spacing:.5px}#reg .logo b{color:var(--orange)}#reg .logo small{display:block;font-weight:600;font-size:11px;letter-spacing:3px;opacity:.7}
+#reg .clock{text-align:right;font-weight:600;font-size:14px;opacity:.9}
+#reg main{flex:1;display:flex;align-items:center;justify-content:center;padding:22px}
+#reg .view{display:none;width:100%;max-width:760px}#reg .view.on{display:block}
+#reg h1{font-size:clamp(28px,6vw,46px);font-weight:900;line-height:1.05;margin-bottom:8px}
+#reg .sub{opacity:.75;margin-bottom:26px}
+#reg .grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
+#reg .big{border:0;border-radius:16px;padding:30px 18px;font:800 20px Archivo;cursor:pointer;color:var(--navy);background:var(--white);display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform .15s}
+#reg .big:hover{transform:translateY(-3px)}#reg .big svg{width:54px;height:54px}#reg .big.or{background:var(--orange);color:var(--white)}
+#reg .big small{font-weight:600;font-size:13px;opacity:.75}
+#reg .card{background:var(--white);color:var(--navy);border-radius:18px;padding:26px}
+#reg label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+#reg input,#reg select,#reg textarea{width:100%;padding:14px;border:2px solid var(--line);border-radius:10px;font:600 16px Archivo;color:var(--navy);background:#fff}
+#reg input:focus,#reg select:focus,#reg textarea:focus,#reg button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+#reg .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:6px}
+#reg .seg button{border:0;background:none;padding:12px;border-radius:9px;font:800 15px Archivo;color:var(--navy);cursor:pointer}
+#reg .seg button.on{background:var(--navy);color:#fff}#reg .seg button.on.out{background:var(--orange)}
+#reg .btn{width:100%;margin-top:20px;border:0;border-radius:12px;padding:17px;font:800 18px Archivo;background:var(--orange);color:#fff;cursor:pointer}
+#reg .btn:disabled{opacity:.5}
+#reg .link{background:none;border:0;color:inherit;font:600 14px Archivo;opacity:.8;cursor:pointer;margin-top:16px;text-decoration:underline}
+#reg .dt{display:inline-block;background:var(--soft);padding:8px 14px;border-radius:30px;font-weight:600;font-size:14px;margin-bottom:6px}
+#reg .err{color:#C62828;font-weight:600;margin-top:12px;min-height:20px}
+#reg .done{text-align:center;background:var(--white);color:var(--navy);border-radius:18px;padding:40px 26px}
+#reg .done .tick{width:84px;height:84px;border-radius:50%;background:var(--ok);margin:0 auto 18px;display:grid;place-items:center}
+#reg .done .tick svg{width:46px;height:46px}#reg .done p{font-size:19px;line-height:1.45;max-width:520px;margin:0 auto 10px}
+#reg .done.out .tick{background:var(--orange)}
+#reg .langs button{font-size:18px}
+#reg footer{padding:12px;text-align:center;font-size:12px;opacity:.6}
+#reg footer button{color:#fff}
+@media(max-width:560px){#reg .grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){#reg *{transition:none!important}}
+#reg #ct button.on{background:var(--orange);color:#fff}
 </style>
 </head>
 <body>
+<div id="reg" style="display:none">
 <header>
   <div class="logo">YUSEN <b>Logistics</b><small>BARCELONA</small></div>
-  <div class="clock" id="clock"></div>
+  <div class="clock" id="rclock"></div>
 </header>
 <main>
   <!-- Idioma -->
@@ -98,6 +123,7 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
       <div class="seg"><button id="m-in" class="on" data-t="entry"></button><button id="m-out" class="out" data-t="exit"></button></div>
       <label for="f-name" data-t="name"></label><input id="f-name" autocomplete="off">
       <label for="f-co" data-t="company"></label><input id="f-co" autocomplete="off">
+      <div id="ct-wrap"><label data-t="ctype"></label><div class="seg" id="ct"><button data-c="NWT">NWT</button><button data-c="ETT">ETT</button></div></div>
       <div id="reason-wrap"><label for="f-re" data-t="reason"></label><input id="f-re" autocomplete="off"></div>
       <div class="err" id="err" role="alert"></div>
       <button class="btn" id="go"></button>
@@ -110,79 +136,123 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
       <h1 id="d-title" style="font-size:32px"></h1><p id="d-msg"></p>
       <button class="btn" id="d-new" data-t="newReg" style="max-width:320px"></button></div>
   </section>
-  <!-- Staff -->
-  <section class="view" id="v-staff"></section>
 </main>
-<footer>Yusen Logistics Barcelona · <button class="link" id="b-staff" style="margin:0">Staff</button></footer>
+<footer>Yusen Logistics Barcelona</footer>
+</div>
+<div id="ctl" style="display:none">
+<div id="login"><div class="lc"><div class="logo" style="color:var(--navy)">YUSEN <b>Logistics</b></div><p style="margin:6px 0 18px;font-weight:600">Control Tower</p>
+<input id="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="8" placeholder="PIN" autocomplete="off" autofocus style="text-align:center;letter-spacing:8px;font-size:24px"><div class="err" id="pe"></div><button class="act or" id="pgo" style="width:100%">Acceder</button></div></div>
 
+<div id="app">
+ <div class="top"><div class="logo">YUSEN <b>Logistics</b><span>Control Tower · Accesos</span></div>
+ <div class="live"><span><i class="dot"></i>En directo</span><span id="clock"></span><button class="act" id="out">Salir</button></div></div>
+ <div class="wrap">
+  <div class="warn noprint" id="lerr" role="alert"></div>
+  <div class="kpis">
+   <div class="kpi g"><b id="k1">0</b><span>Dentro ahora</span></div>
+   <div class="kpi o"><b id="k2">0</b><span>Visitas dentro</span></div>
+   <div class="kpi"><b id="k3">0</b><span>NWT dentro</span></div>
+   <div class="kpi"><b id="k4">0</b><span>ETT dentro</span></div>
+   <div class="kpi"><b id="k5">0</b><span>Salidas en el periodo</span></div>
+  </div>
+  <div class="box"><h2>Dentro ahora</h2><div class="tw"><table><thead><tr><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Tiempo dentro</th></tr></thead><tbody id="tb-in"></tbody></table></div></div>
+  <div class="box"><h2>Informe de accesos</h2>
+   <div class="filters">
+    <div><label for="f1">Desde</label><input type="date" id="f1"></div>
+    <div><label for="f2">Hasta</label><input type="date" id="f2"></div>
+    <div><label for="ft">Tipo</label><select id="ft"><option value="">Todos</option><option value="visita">Visitas</option><option value="trabajador">Trabajadores (todos)</option><option value="NWT">Trabajadores NWT</option><option value="ETT">Trabajadores ETT</option></select></div>
+    <div><label for="fs">Estado</label><select id="fs"><option value="">Todos</option><option value="in">Dentro</option><option value="out">Han salido</option></select></div>
+    <div><label for="fq">Buscar</label><input id="fq" placeholder="Nombre o empresa"></div>
+    <button class="act" id="csv">Exportar CSV</button><button class="act or" id="prt">Imprimir</button>
+   </div>
+   <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Salida</th><th>Duración</th></tr></thead><tbody id="tb-rep"></tbody></table></div>
+  </div>
+  <div class="box noprint"><h2>Códigos QR de registro</h2><p style="margin-bottom:14px;font-size:14px;opacity:.8">Imprímelos y colócalos en la entrada. Abren la pantalla de registro para visitas y trabajadores.</p><div class="qgrid" id="qrs"></div></div>
+ </div>
+</div>
+</div>
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,addDoc,updateDoc,doc,getDocs,query,where,onSnapshot,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,doc,getDoc,setDoc,updateDoc,query,where,onSnapshot,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getAuth,signInAnonymously,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 /* ====== CONFIGURACIÓN ====== */
-const firebaseConfig={apiKey:"projectId",authDomain:"appId",projectId:"TU_PROYECTO",appId:"TU_APP_ID"};
-const STAFF_PIN="2468";            // cambia este PIN
+const firebaseConfig={apiKey:"TU_API_KEY",authDomain:"TU_PROYECTO.firebaseapp.com",projectId:"TU_PROYECTO",appId:"TU_APP_ID"};
 const COLECCION="registros";
 /* =========================== */
 
-const db=getFirestore(initializeApp(firebaseConfig)),col=collection(db,COLECCION);
+const app=initializeApp(firebaseConfig),db=getFirestore(app),col=collection(db,COLECCION),auth=getAuth(app);
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+
+/* ====== PANTALLA DE REGISTRO (la que abre el QR) ====== */
+function initReg(){
+$("#reg").style.display="flex";
 const L={
-es:{loc:"es-ES",pick:"¿Cuál es el motivo de tu visita?",pickSub:"Selecciona una opción para registrarte.",visits:"Visitas",visitsSub:"Visitante o cliente",workers:"Trabajadores",workersSub:"Personal externo / ETT",changeLang:"Cambiar idioma",entry:"Entrada",exit:"Salida",name:"Nombre y apellidos",company:"Empresa",reason:"Motivo de la visita",back:"Volver",
+es:{loc:"es-ES",pick:"¿Cuál es el motivo de tu visita?",pickSub:"Selecciona una opción para registrarte.",visits:"Visitas",visitsSub:"Visitante o cliente",workers:"Trabajadores",workersSub:"Personal externo / ETT",changeLang:"Cambiar idioma",ctype:"Tipo de personal",entry:"Entrada",exit:"Salida",name:"Nombre y apellidos",company:"Empresa",reason:"Motivo de la visita",back:"Volver",
  tV:"Registro de visita",tW:"Fichaje de trabajador",goIn:"Registrar llegada",goInW:"Registrar entrada",goOut:"Registrar salida",fill:"Completa todos los campos.",noOpen:"No encontramos una entrada abierta con estos datos. Revisa nombre y empresa.",already:"Ya tienes una entrada registrada. Registra primero tu salida.",fail:"No se pudo guardar. Inténtalo de nuevo.",newReg:"Nuevo registro",
  dV:"Llegada registrada",mV:"Bienvenido a Yusen Logistics. Por favor, espere en recepción. Un miembro del personal le entregará chaleco, calzado y una acreditación para acceder.",dW:"Entrada registrada",mW:"Entrada registrada. Que tenga una buena jornada.",dO:"Salida registrada",mO:"Salida registrada. Gracias y hasta pronto."},
-ca:{loc:"ca-ES",pick:"Quin és el motiu de la teva visita?",pickSub:"Selecciona una opció per registrar-te.",visits:"Visites",visitsSub:"Visitant o client",workers:"Treballadors",workersSub:"Personal extern / ETT",changeLang:"Canviar idioma",entry:"Entrada",exit:"Sortida",name:"Nom i cognoms",company:"Empresa",reason:"Motiu de la visita",back:"Tornar",
+ca:{loc:"ca-ES",pick:"Quin és el motiu de la teva visita?",pickSub:"Selecciona una opció per registrar-te.",visits:"Visites",visitsSub:"Visitant o client",workers:"Treballadors",workersSub:"Personal extern / ETT",changeLang:"Canviar idioma",ctype:"Tipus de personal",entry:"Entrada",exit:"Sortida",name:"Nom i cognoms",company:"Empresa",reason:"Motiu de la visita",back:"Tornar",
  tV:"Registre de visita",tW:"Fitxatge de treballador",goIn:"Registrar arribada",goInW:"Registrar entrada",goOut:"Registrar sortida",fill:"Completa tots els camps.",noOpen:"No trobem cap entrada oberta amb aquestes dades. Revisa nom i empresa.",already:"Ja tens una entrada registrada. Registra primer la sortida.",fail:"No s'ha pogut desar. Torna-ho a provar.",newReg:"Nou registre",
  dV:"Arribada registrada",mV:"Benvingut a Yusen Logistics. Si us plau, esperi a recepció. Un membre del personal li lliurarà armilla, calçat i una acreditació per accedir.",dW:"Entrada registrada",mW:"Entrada registrada. Que tingui una bona jornada.",dO:"Sortida registrada",mO:"Sortida registrada. Gràcies i fins aviat."},
-en:{loc:"en-GB",pick:"What brings you here?",pickSub:"Select an option to sign in.",visits:"Visitors",visitsSub:"Visitor or client",workers:"Workers",workersSub:"External staff / agency",changeLang:"Change language",entry:"Sign in",exit:"Sign out",name:"Full name",company:"Company",reason:"Reason for visit",back:"Back",
+en:{loc:"en-GB",pick:"What brings you here?",pickSub:"Select an option to sign in.",visits:"Visitors",visitsSub:"Visitor or client",workers:"Workers",workersSub:"External staff / agency",changeLang:"Change language",ctype:"Worker type",entry:"Sign in",exit:"Sign out",name:"Full name",company:"Company",reason:"Reason for visit",back:"Back",
  tV:"Visitor registration",tW:"Worker clock-in",goIn:"Register arrival",goInW:"Register entry",goOut:"Register exit",fill:"Please fill in all fields.",noOpen:"We couldn't find an open entry with these details. Check name and company.",already:"You already have an open entry. Please sign out first.",fail:"Could not save. Please try again.",newReg:"New registration",
  dV:"Arrival registered",mV:"Welcome to Yusen Logistics. Please wait at reception. A member of staff will give you a safety vest, safety footwear and an access badge.",dW:"Entry registered",mW:"Entry registered. Have a good shift.",dO:"Exit registered",mO:"Exit registered. Thank you and see you soon."},
-fr:{loc:"fr-FR",pick:"Quel est le motif de votre venue ?",pickSub:"Sélectionnez une option pour vous enregistrer.",visits:"Visiteurs",visitsSub:"Visiteur ou client",workers:"Travailleurs",workersSub:"Personnel externe / intérim",changeLang:"Changer de langue",entry:"Entrée",exit:"Sortie",name:"Nom et prénom",company:"Entreprise",reason:"Motif de la visite",back:"Retour",
+fr:{loc:"fr-FR",pick:"Quel est le motif de votre venue ?",pickSub:"Sélectionnez une option pour vous enregistrer.",visits:"Visiteurs",visitsSub:"Visiteur ou client",workers:"Travailleurs",workersSub:"Personnel externe / intérim",changeLang:"Changer de langue",ctype:"Type de personnel",entry:"Entrée",exit:"Sortie",name:"Nom et prénom",company:"Entreprise",reason:"Motif de la visite",back:"Retour",
  tV:"Enregistrement visiteur",tW:"Pointage travailleur",goIn:"Enregistrer l'arrivée",goInW:"Enregistrer l'entrée",goOut:"Enregistrer la sortie",fill:"Veuillez remplir tous les champs.",noOpen:"Aucune entrée ouverte trouvée avec ces données. Vérifiez le nom et l'entreprise.",already:"Vous avez déjà une entrée enregistrée. Enregistrez d'abord votre sortie.",fail:"Échec de l'enregistrement. Réessayez.",newReg:"Nouvel enregistrement",
  dV:"Arrivée enregistrée",mV:"Bienvenue chez Yusen Logistics. Veuillez patienter à l'accueil. Un membre du personnel vous remettra un gilet, des chaussures de sécurité et un badge d'accès.",dW:"Entrée enregistrée",mW:"Entrée enregistrée. Bonne journée de travail.",dO:"Sortie enregistrée",mO:"Sortie enregistrée. Merci et à bientôt."}
 };
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
-const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-let lang="es",tipo="visita",mode="in",timer,unsubs=[];
+let lang="es",tipo="visita",mode="in",ct="",timer;
+const qt=new URLSearchParams(location.search).get("t"),fixed=["visita","trabajador"].includes(qt)?qt:null;
 const t=k=>L[lang][k];
 
 function show(id){$$(".view").forEach(v=>v.classList.toggle("on",v.id===id));clearTimeout(timer)}
 function applyLang(){document.documentElement.lang=lang;$$("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));updForm()}
 function tick(){const n=new Date(),o={weekday:"long",day:"numeric",month:"long",year:"numeric"};
  const txt=n.toLocaleDateString(L[lang].loc,o)+" · "+n.toLocaleTimeString(L[lang].loc,{hour:"2-digit",minute:"2-digit",second:"2-digit"});
- $("#clock").textContent=txt;$("#dt").textContent=txt}
+ $("#rclock").textContent=txt;$("#dt").textContent=txt}
 setInterval(tick,1000);tick();
 
 function updForm(){
  $("#f-title").textContent=tipo==="visita"?t("tV"):t("tW");
  $("#m-in").classList.toggle("on",mode==="in");$("#m-out").classList.toggle("on",mode==="out");
+ $("#ct-wrap").style.display=(tipo==="trabajador"&&mode==="in")?"block":"none";
+ $$("#ct button").forEach(b=>b.classList.toggle("on",b.dataset.c===ct));
  $("#reason-wrap").style.display=(tipo==="visita"&&mode==="in")?"block":"none";
  $("#go").textContent=mode==="out"?t("goOut"):(tipo==="visita"?t("goIn"):t("goInW"));
  $("#err").textContent="";
 }
 function speak(txt){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang=L[lang].loc;u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
 
-$$("[data-l]").forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();show("v-type")});
-$$("[data-type]").forEach(b=>b.onclick=()=>{tipo=b.dataset.type;mode="in";$("#f-name").value=$("#f-co").value=$("#f-re").value="";updForm();show("v-form")});
-$("#b-lang").onclick=()=>show("v-lang");$("#b-back").onclick=()=>show("v-type");
+$$("[data-l]").forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();fixed?openForm(fixed):show("v-type")});
+function openForm(x){tipo=x;mode="in";ct="";$("#f-name").value=$("#f-co").value=$("#f-re").value="";updForm();show("v-form")}
+$$("[data-type]").forEach(b=>b.onclick=()=>openForm(b.dataset.type));
+$$("#ct button").forEach(b=>b.onclick=()=>{ct=b.dataset.c;updForm()});
+$("#b-lang").onclick=()=>show("v-lang");$("#b-back").onclick=()=>show(fixed?"v-lang":"v-type");
 $("#m-in").onclick=()=>{mode="in";updForm()};$("#m-out").onclick=()=>{mode="out";updForm()};
 $("#d-new").onclick=reset;
 function reset(){speechSynthesis?.cancel();show("v-lang")}
 
+const slug=s=>norm(s).replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,60);
 $("#go").onclick=async()=>{
  const n=$("#f-name").value.trim(),c=$("#f-co").value.trim(),r=$("#f-re").value.trim(),err=$("#err"),btn=$("#go");
- if(!n||!c||(mode==="in"&&tipo==="visita"&&!r)){err.textContent=t("fill");return}
+ if(!n||!c||(mode==="in"&&tipo==="visita"&&!r)||(mode==="in"&&tipo==="trabajador"&&!ct)){err.textContent=t("fill");return}
  btn.disabled=true;err.textContent="";
- const key=[tipo,norm(n),norm(c)].join("|"),now=new Date();
+ const now=new Date(),yes=new Date(now.getTime()-864e5),base=tipo+"_"+slug(n)+"_"+slug(c);
+ const ids=d=>[1,2,3,4,5].map(i=>base+"_"+ymd(d)+"_"+i);
  try{
-  const open=await getDocs(query(col,where("key","==",key),where("abierto","==",true)));
   if(mode==="in"){
-   if(!open.empty){err.textContent=t("already");btn.disabled=false;return}
-   await addDoc(col,{tipo,nombre:n,empresa:c,motivo:tipo==="visita"?r:"",key,fecha:ymd(now),entrada:Timestamp.fromDate(now),salida:null,abierto:true,idioma:lang});
+   let free=null;
+   for(const id of ids(now)){const s=await getDoc(doc(db,COLECCION,id));if(!s.exists()){free=id;break}if(s.data().abierto){err.textContent=t("already");btn.disabled=false;return}}
+   if(!free)throw new Error("limit");
+   await setDoc(doc(db,COLECCION,free),{tipo,nombre:n,empresa:c,motivo:tipo==="visita"?r:"",contrato:tipo==="trabajador"?ct:"",fecha:ymd(now),entrada:Timestamp.fromDate(now),salida:null,abierto:true,idioma:lang});
   }else{
-   if(open.empty){err.textContent=t("noOpen");btn.disabled=false;return}
-   await Promise.all(open.docs.map(d=>updateDoc(doc(db,COLECCION,d.id),{salida:Timestamp.fromDate(now),abierto:false})));
+   let found=null;
+   for(const id of [...ids(now).reverse(),...ids(yes).reverse()]){const s=await getDoc(doc(db,COLECCION,id));if(s.exists()&&s.data().abierto){found=id;break}}
+   if(!found){err.textContent=t("noOpen");btn.disabled=false;return}
+   await updateDoc(doc(db,COLECCION,found),{salida:Timestamp.fromDate(now),abierto:false});
   }
   const msg=mode==="out"?t("mO"):tipo==="visita"?t("mV"):t("mW");
   $("#d-title").textContent=mode==="out"?t("dO"):tipo==="visita"?t("dV"):t("dW");
@@ -191,62 +261,93 @@ $("#go").onclick=async()=>{
  }catch(e){console.error(e);err.textContent=t("fail")}
  btn.disabled=false;
 };
+applyLang();
+}
 
-/* ====== PANEL STAFF ====== */
-$("#b-staff").onclick=()=>{
- show("v-staff");
- $("#v-staff").innerHTML=`<div class="card pin"><h1 style="font-size:26px">Staff</h1><label for="pin">PIN</label><input id="pin" type="password" inputmode="numeric"><div class="err" id="pe"></div><button class="btn" id="pgo">Acceder</button><button class="link" id="pback" style="color:var(--navy)">Volver</button></div>`;
- $("#pback").onclick=reset;
- $("#pgo").onclick=()=>$("#pin").value===STAFF_PIN?staff():($("#pe").textContent="PIN incorrecto");
-};
-function staff(){
- const today=ymd(new Date());
- $("#v-staff").innerHTML=`<div class="panel">
- <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h1 style="font-size:28px">Panel de accesos</h1><button class="link noprint" id="sx" style="color:var(--navy)">Cerrar sesión</button></div>
- <div class="kpis"><div class="kpi g"><b id="k1">0</b><span>Dentro ahora</span></div><div class="kpi o"><b id="k2">0</b><span>Visitas dentro</span></div><div class="kpi"><b id="k3">0</b><span>Trabajadores dentro</span></div><div class="kpi"><b id="k4">0</b><span>Salidas en el periodo</span></div></div>
- <div class="h2">Dentro ahora</div><div class="tw"><table><thead><tr><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th></tr></thead><tbody id="tb-in"></tbody></table></div>
- <div class="h2">Informe</div>
- <div class="filters"><div><label>Desde</label><input type="date" id="f1" value="${today}"></div><div><label>Hasta</label><input type="date" id="f2" value="${today}"></div>
- <div><label>Tipo</label><select id="ft"><option value="">Todos</option><option value="visita">Visitas</option><option value="trabajador">Trabajadores</option></select></div>
- <div><label>Estado</label><select id="fs"><option value="">Todos</option><option value="in">Dentro</option><option value="out">Han salido</option></select></div>
- <button id="csv">Exportar CSV</button><button id="prt" style="background:var(--orange)">Imprimir</button></div>
- <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Salida</th><th>Duración</th></tr></thead><tbody id="tb-rep"></tbody></table></div>
- <div class="h2 noprint">QR de acceso</div><div class="noprint"><div id="qrbox"></div><p style="margin-top:8px;font-size:13px">Imprime este QR y colócalo en la entrada. Apunta a: <b id="qrurl"></b></p></div></div>`;
- $("#sx").onclick=()=>{unsubs.forEach(u=>u());unsubs=[];reset()};
- const url=location.href.split("#")[0].split("?")[0];$("#qrurl").textContent=url;new QRCode($("#qrbox"),{text:url,width:200,height:200,colorDark:"#0A1F44"});
- let inside=[],rows=[],unRep=null;
- const hm=ts=>ts?ts.toDate().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}):"—";
- const dd=ts=>ts?ts.toDate().toLocaleDateString("es-ES"):"";
- const tag=x=>x==="visita"?'<span class="tag t-v">Visita</span>':'<span class="tag t-w">Trabajador</span>';
- const dur=r=>{if(!r.salida)return"";const m=Math.round((r.salida.toMillis()-r.entrada.toMillis())/60000);return Math.floor(m/60)+" h "+String(m%60).padStart(2,"0")+" min"};
+/* ====== CONTROL TOWER (página principal) ====== */
+function initCtl(){
+$("#ctl").style.display="block";
+const pad=n=>String(n).padStart(2,"0");
+const hm=ts=>ts?ts.toDate().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}):"—";
+const dd=ts=>ts?ts.toDate().toLocaleDateString("es-ES"):"";
+const hh=m=>Math.floor(m/60)+" h "+pad(m%60)+" min";
+const dur=r=>r.salida?hh(Math.round((r.salida.toMillis()-r.entrada.toMillis())/60000)):"";
+const tag=r=>r.tipo==="visita"?'<span class="tag tv">Visita</span>':`<span class="tag ${r.contrato==="ETT"?"te":"tn"}">${esc(r.contrato||"Trabajador")}</span>`;
+
+const PIN="2468",KEY="yusen_ctl_ok";
+async function ensureAuth(){
+ try{
+  if(auth.authStateReady)await auth.authStateReady();
+  if(!auth.currentUser)await signInAnonymously(auth);
+ }catch(e){console.warn("Sesión anónima no disponible",e)}
+}
+
+function login(){
+ let saved=false;try{saved=localStorage.getItem(KEY)==="1"}catch(e){}
+ if(saved){start();return}
+ const go=()=>{
+  if($("#pin").value.trim()===PIN){try{localStorage.setItem(KEY,"1")}catch(e){}start()}
+  else{$("#pe").textContent="PIN incorrecto";$("#pin").value="";$("#pin").focus()}
+ };
+ $("#pgo").onclick=go;$("#pin").onkeydown=e=>{if(e.key==="Enter")go()};
+}
+
+async function start(){
+ $("#login").style.display="none";$("#app").style.display="block";
+ $("#out").onclick=async()=>{try{localStorage.removeItem(KEY)}catch(e){}try{await signOut(auth)}catch(e){}location.reload()};
+ setInterval(()=>$("#clock").textContent=new Date().toLocaleString("es-ES"),1000);
+ const today=ymd(new Date());$("#f1").value=$("#f2").value=today;
+ qrs();
+ let inside=[],rows=[],unRep=null,cur=[];
+ const fail=e=>{console.error(e);const w=$("#lerr");w.textContent="No se pueden leer los registros ("+(e.code||"error")+"). Activa el acceso «Anónimo» en Firebase → Authentication → Método de acceso, o permite la lectura en las reglas de Firestore.";w.style.display="block"};
  function drawIn(){
   const a=[...inside].sort((x,y)=>x.entrada.toMillis()-y.entrada.toMillis());
-  $("#k1").textContent=a.length;$("#k2").textContent=a.filter(r=>r.tipo==="visita").length;$("#k3").textContent=a.filter(r=>r.tipo==="trabajador").length;
-  $("#tb-in").innerHTML=a.map(r=>`<tr><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${dd(r.entrada)} ${hm(r.entrada)}</td></tr>`).join("")||'<tr><td colspan="5">Nadie dentro ahora.</td></tr>';
+  $("#k1").textContent=a.length;
+  $("#k2").textContent=a.filter(r=>r.tipo==="visita").length;
+  $("#k3").textContent=a.filter(r=>r.tipo==="trabajador"&&r.contrato==="NWT").length;
+  $("#k4").textContent=a.filter(r=>r.tipo==="trabajador"&&r.contrato==="ETT").length;
+  $("#tb-in").innerHTML=a.map(r=>`<tr><td>${tag(r)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${dd(r.entrada)} ${hm(r.entrada)}</td><td>${hh(Math.max(0,Math.floor((Date.now()-r.entrada.toMillis())/60000)))}</td></tr>`).join("")||'<tr><td colspan="6">Nadie dentro ahora.</td></tr>';
  }
  function drawRep(){
-  const ft=$("#ft").value,fs=$("#fs").value;
-  const a=rows.filter(r=>(!ft||r.tipo===ft)&&(!fs||(fs==="in")===r.abierto)).sort((x,y)=>y.entrada.toMillis()-x.entrada.toMillis());
-  $("#k4").textContent=a.filter(r=>!r.abierto).length;
-  $("#tb-rep").innerHTML=a.map(r=>`<tr><td>${esc(r.fecha)}</td><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${hm(r.entrada)}</td><td>${r.abierto?'<span class="in">Dentro</span>':hm(r.salida)}</td><td>${dur(r)}</td></tr>`).join("")||'<tr><td colspan="8">Sin registros para este filtro.</td></tr>';
-  drawRep.cur=a;
+  const ft=$("#ft").value,fs=$("#fs").value,q=$("#fq").value.toLowerCase().trim();
+  cur=rows.filter(r=>(!ft||(ft==="visita"||ft==="trabajador"?r.tipo===ft:r.contrato===ft))&&(!fs||(fs==="in")===r.abierto)&&(!q||(r.nombre+" "+r.empresa).toLowerCase().includes(q))).sort((x,y)=>y.entrada.toMillis()-x.entrada.toMillis());
+  $("#k5").textContent=rows.filter(r=>!r.abierto).length;
+  $("#tb-rep").innerHTML=cur.map(r=>`<tr><td>${esc(r.fecha)}</td><td>${tag(r)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${hm(r.entrada)}</td><td>${r.abierto?'<span class="in">Dentro</span>':hm(r.salida)}</td><td>${dur(r)}</td></tr>`).join("")||'<tr><td colspan="8">Sin registros para este filtro.</td></tr>';
  }
  function sub(){
-  unRep?.();const f1=$("#f1").value,f2=$("#f2").value;
-  unRep=onSnapshot(query(col,where("fecha",">=",f1),where("fecha","<=",f2)),s=>{rows=s.docs.map(d=>d.data());drawRep()});
+  unRep?.();
+  unRep=onSnapshot(query(col,where("fecha",">=",$("#f1").value),where("fecha","<=",$("#f2").value)),s=>{rows=s.docs.map(d=>d.data());drawRep()},fail);
  }
- unsubs.push(onSnapshot(query(col,where("abierto","==",true)),s=>{inside=s.docs.map(d=>d.data());drawIn()}),()=>unRep?.());
- sub();
- ["f1","f2"].forEach(i=>$("#"+i).onchange=sub);["ft","fs"].forEach(i=>$("#"+i).onchange=drawRep);
+ await ensureAuth();
+ onSnapshot(query(col,where("abierto","==",true)),s=>{$("#lerr").style.display="none";inside=s.docs.map(d=>d.data());drawIn()},fail);
+ setInterval(drawIn,60000);sub();
+ ["f1","f2"].forEach(i=>$("#"+i).onchange=sub);
+ ["ft","fs"].forEach(i=>$("#"+i).onchange=drawRep);$("#fq").oninput=drawRep;
  $("#prt").onclick=()=>print();
  $("#csv").onclick=()=>{
-  const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
-  const lines=[["Fecha","Tipo","Nombre","Empresa","Motivo","Entrada","Salida","Duración"].map(q).join(";")];
-  (drawRep.cur||[]).forEach(r=>lines.push([r.fecha,r.tipo,r.nombre,r.empresa,r.motivo,hm(r.entrada),r.abierto?"Dentro":hm(r.salida),dur(r)].map(q).join(";")));
-  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+lines.join("\n")],{type:"text/csv"}));a.download="registro_yusen_"+$("#f1").value+"_"+$("#f2").value+".csv";a.click();
+  const q=v=>'"'+String(v??"").replace(/"/g,'""')+'"';
+  const L=[["Fecha","Tipo","Contrato","Nombre","Empresa","Motivo","Entrada","Salida","Duración"].map(q).join(";")];
+  cur.forEach(r=>L.push([r.fecha,r.tipo,r.contrato,r.nombre,r.empresa,r.motivo,hm(r.entrada),r.abierto?"Dentro":hm(r.salida),dur(r)].map(q).join(";")));
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\ufeff"+L.join("\n")],{type:"text/csv"}));a.download="accesos_yusen_"+$("#f1").value+"_"+$("#f2").value+".csv";a.click();
  };
 }
-applyLang();
+
+function qrs(){
+ const base=location.href.split("#")[0].split("?")[0];
+ const items=[["QR general","Visitas y trabajadores",base+"?r=1"],["QR visitas","Solo visitas",base+"?r=1&t=visita"],["QR trabajadores","Solo trabajadores (NWT / ETT)",base+"?r=1&t=trabajador"]];
+ $("#qrs").innerHTML=items.map((q,i)=>`<div class="qrc"><h2 style="margin:0">${q[0]}</h2><small>${q[1]}</small><div class="qb" id="qb${i}"></div><div class="qa"><button data-d="${i}">Descargar</button><button class="or" data-p="${i}">Imprimir</button></div><code>${esc(q[2])}</code></div>`).join("");
+ items.forEach((q,i)=>new QRCode($("#qb"+i),{text:q[2],width:180,height:180,colorDark:"#0A1F44"}));
+ const img=i=>{const c=$("#qb"+i+" canvas");return c?c.toDataURL("image/png"):$("#qb"+i+" img").src};
+ $$("[data-d]").forEach(b=>b.onclick=()=>{const a=document.createElement("a");a.href=img(b.dataset.d);a.download="qr_yusen_"+b.dataset.d+".png";a.click()});
+ $$("[data-p]").forEach(b=>b.onclick=()=>{const i=b.dataset.p,w=window.open("","_blank");
+  w.document.write(`<body style="font-family:Arial;text-align:center;padding:40px"><h1 style="color:#0A1F44">YUSEN <span style="color:#F47B20">Logistics</span></h1><h2 style="color:#0A1F44">${esc(items[i][1])}</h2><p>Escanea para registrar tu entrada y salida</p><img src="${img(i)}" width="360"><p style="color:#555">Scan to sign in / out · Escaneja per registrar-te · Scannez pour vous enregistrer</p></body>`);
+  w.document.close();setTimeout(()=>w.print(),400)});
+}
+login();
+}
+
+const P=new URLSearchParams(location.search);
+(P.get("r")||P.get("t"))?initReg():initCtl();
 </script>
 </body>
 </html>
