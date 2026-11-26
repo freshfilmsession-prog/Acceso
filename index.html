@@ -7,9 +7,9 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;800;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-:root{--navy:#0A1F44;--navy2:#13346F;--orange:#F47B20;--white:#fff;--soft:#EEF2F8;--line:#D5DDEA;--ok:#1F9D63}
+:root{--navy:#0A1F44;--navy2:#13346F;--orange:#F47B20;--white:#fff;--soft:#EEF2F8;--line:#D5DDEA;--ok:#1F9D63;--f:Archivo,system-ui,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif}
 *{box-sizing:border-box;margin:0}
-body{font-family:Archivo,system-ui,sans-serif;background:var(--navy);color:var(--white);min-height:100vh;display:flex;flex-direction:column}
+body{font-family:var(--f);background:var(--navy);color:var(--white);min-height:100vh;display:flex;flex-direction:column}
 header{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:4px solid var(--orange)}
 .logo{font-weight:900;font-size:26px;letter-spacing:.5px}.logo b{color:var(--orange)}.logo small{display:block;font-weight:600;font-size:11px;letter-spacing:3px;opacity:.7}
 .clock{text-align:right;font-weight:600;font-size:14px;opacity:.9}
@@ -18,26 +18,32 @@ main{flex:1;display:flex;align-items:center;justify-content:center;padding:22px}
 h1{font-size:clamp(28px,6vw,46px);font-weight:900;line-height:1.05;margin-bottom:8px}
 .sub{opacity:.75;margin-bottom:26px}
 .grid{display:grid;gap:14px;grid-template-columns:1fr 1fr}
-.big{border:0;border-radius:16px;padding:30px 18px;font:800 20px Archivo;cursor:pointer;color:var(--navy);background:var(--white);display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform .15s}
+.big{border:0;border-radius:16px;padding:30px 18px;font:800 20px var(--f);cursor:pointer;color:var(--navy);background:var(--white);display:flex;flex-direction:column;align-items:center;gap:10px;transition:transform .15s}
 .big:hover{transform:translateY(-3px)}.big svg{width:54px;height:54px}.big.or{background:var(--orange);color:var(--white)}
 .big small{font-weight:600;font-size:13px;opacity:.75}
 .card{background:var(--white);color:var(--navy);border-radius:18px;padding:26px}
 label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
-input,select,textarea{width:100%;padding:14px;border:2px solid var(--line);border-radius:10px;font:600 16px Archivo;color:var(--navy);background:#fff}
+input,select,textarea{width:100%;padding:14px;border:2px solid var(--line);border-radius:10px;font:600 16px var(--f);color:var(--navy);background:#fff}
 input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
 .seg{display:grid;grid-template-columns:1fr 1fr;background:var(--soft);border-radius:12px;padding:4px;margin-bottom:6px}
-.seg button{border:0;background:none;padding:12px;border-radius:9px;font:800 15px Archivo;color:var(--navy);cursor:pointer}
+.seg button{border:0;background:none;padding:12px;border-radius:9px;font:800 15px var(--f);color:var(--navy);cursor:pointer}
 .seg button.on{background:var(--navy);color:#fff}.seg button.on.out{background:var(--orange)}
-.btn{width:100%;margin-top:20px;border:0;border-radius:12px;padding:17px;font:800 18px Archivo;background:var(--orange);color:#fff;cursor:pointer}
+.btn{width:100%;margin-top:20px;border:0;border-radius:12px;padding:17px;font:800 18px var(--f);background:var(--orange);color:#fff;cursor:pointer}
+.btn.gr{background:var(--soft);color:var(--navy)}
 .btn:disabled{opacity:.5}
-.link{background:none;border:0;color:inherit;font:600 14px Archivo;opacity:.8;cursor:pointer;margin-top:16px;text-decoration:underline}
-.dt{display:inline-block;background:var(--soft);padding:8px 14px;border-radius:30px;font-weight:600;font-size:14px;margin-bottom:6px}
+.link{background:none;border:0;color:inherit;font:600 14px var(--f);opacity:.8;cursor:pointer;margin-top:16px;text-decoration:underline}
+.dt{display:inline-block;background:var(--soft);padding:8px 14px;border-radius:30px;font-weight:600;font-size:14px;margin-bottom:6px;color:var(--navy)}
 .err{color:#C62828;font-weight:600;margin-top:12px;min-height:20px}
 .done{text-align:center;background:var(--white);color:var(--navy);border-radius:18px;padding:40px 26px}
 .done .tick{width:84px;height:84px;border-radius:50%;background:var(--ok);margin:0 auto 18px;display:grid;place-items:center}
 .done .tick svg{width:46px;height:46px}.done p{font-size:19px;line-height:1.45;max-width:520px;margin:0 auto 10px}
-.done.out .tick{background:var(--orange)}
-.langs button{font-size:18px}
+.done.out .tick,.done .tick.or{background:var(--orange)}
+.done .dt{margin-bottom:14px}
+.warn{background:#FFF4E5;border:3px solid var(--orange);border-radius:14px;padding:18px;margin:14px auto 12px;max-width:560px}
+.warn svg{display:block;margin:0 auto 6px}
+.warn b{display:block;font-size:20px;color:#B34E00;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.warn p{margin:0 auto!important;font-weight:700}
+.langs button{font-size:18px}.langs button:last-child{grid-column:1/-1}
 footer{padding:12px;text-align:center;font-size:12px;opacity:.6}
 footer button{color:#fff}
 /* staff */
@@ -47,16 +53,24 @@ footer button{color:#fff}
 .kpi{background:var(--white);border-radius:14px;padding:16px;border-left:6px solid var(--navy)}.kpi.o{border-color:var(--orange)}.kpi.g{border-color:var(--ok)}
 .kpi b{font-size:36px;font-weight:900;display:block}.kpi span{font-size:13px;font-weight:600;opacity:.7}
 .filters{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin:6px 0 14px}.filters div{flex:1;min-width:130px}.filters label{margin:0 0 4px}
-.filters button{padding:14px 16px;border:0;border-radius:10px;font:800 14px Archivo;background:var(--navy);color:#fff;cursor:pointer}
+.filters button{padding:14px 16px;border:0;border-radius:10px;font:800 14px var(--f);background:var(--navy);color:#fff;cursor:pointer}
 .tw{overflow-x:auto;background:#fff;border-radius:12px}
 table{width:100%;border-collapse:collapse;font-size:14px}th{background:var(--navy);color:#fff;text-align:left;padding:11px;font-weight:600;white-space:nowrap}
 td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
 .tag{padding:3px 10px;border-radius:20px;font-size:12px;font-weight:800}.t-v{background:#FFE6D2;color:#B34E00}.t-w{background:#DCE6F8;color:var(--navy2)}
 .in{color:var(--ok);font-weight:800}.h2{font-size:20px;font-weight:900;margin:18px 0 10px}
+.abtn{border:0;border-radius:8px;padding:7px 12px;font:800 13px var(--f);cursor:pointer;background:var(--orange);color:#fff}
+.abtn.nv{background:var(--navy)}
+.ed{color:var(--orange);font-weight:800;cursor:help}
 #qrbox{background:#fff;display:inline-block;padding:14px;border-radius:12px}
 .pin{max-width:320px;margin:auto;text-align:center}
+.modal{position:fixed;inset:0;background:rgba(10,31,68,.72);display:grid;place-items:center;padding:16px;z-index:50}
+.modal[hidden]{display:none}
+.mbox{background:#fff;color:var(--navy);border-radius:16px;padding:22px;width:100%;max-width:460px;max-height:92vh;overflow:auto}
+.mbox h2{font-size:22px;font-weight:900}.mbox .hint{font-size:12px;opacity:.7;margin-top:4px}
+.mrow{display:flex;gap:10px}.mrow .btn{margin-top:16px}
 @media(max-width:560px){.grid{grid-template-columns:1fr}}
-@media print{body{background:#fff}header,footer,.filters,.noprint{display:none!important}#v-staff{color:#000}}
+@media print{body{background:#fff}header,footer,.filters,.noprint,.modal{display:none!important}#v-staff{color:#000}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -68,13 +82,16 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
 <main>
   <!-- Idioma -->
   <section class="view on" id="v-lang">
-    <h1>Bienvenido · Benvingut · Welcome · Bienvenue</h1>
-    <p class="sub">Idioma · Idioma · Language · Langue</p>
+    <h1>Bienvenido · Benvingut · Welcome · Bienvenue · Bem-vindo · Bun venit · ようこそ</h1>
+    <p class="sub">Idioma · Idioma · Language · Langue · Idioma · Limbă · 言語</p>
     <div class="grid langs">
       <button class="big" data-l="es">Español</button>
       <button class="big" data-l="ca">Català</button>
       <button class="big or" data-l="en">English</button>
       <button class="big or" data-l="fr">Français</button>
+      <button class="big" data-l="pt">Português</button>
+      <button class="big" data-l="ro">Română</button>
+      <button class="big or" data-l="ja">日本語</button>
     </div>
   </section>
   <!-- Tipo -->
@@ -96,19 +113,40 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
       <span class="dt" id="dt"></span>
       <h1 id="f-title" style="font-size:30px"></h1>
       <div class="seg"><button id="m-in" class="on" data-t="entry"></button><button id="m-out" class="out" data-t="exit"></button></div>
+      <!-- Trabajadores: primero empresa (desplegable) -->
+      <div id="w-co-wrap">
+        <label for="f-cosel" data-t="company"></label>
+        <select id="f-cosel"><option value="" disabled selected data-t="coSel"></option><option>NWT</option><option>ETT</option><option>CTT</option><option>OTROS</option></select>
+        <input id="f-coo" data-p="coOther" autocomplete="off" style="margin-top:10px;display:none">
+      </div>
       <label for="f-name" data-t="name"></label><input id="f-name" autocomplete="off">
-      <label for="f-co" data-t="company"></label><input id="f-co" autocomplete="off">
+      <!-- Visitas: empresa en texto libre -->
+      <div id="v-co-wrap"><label for="f-co" data-t="company"></label><input id="f-co" autocomplete="off"></div>
       <div id="reason-wrap"><label for="f-re" data-t="reason"></label><input id="f-re" autocomplete="off"></div>
       <div class="err" id="err" role="alert"></div>
       <button class="btn" id="go"></button>
       <button class="link" id="b-back" style="color:var(--navy)" data-t="back"></button>
     </div>
   </section>
-  <!-- Confirmación -->
+  <!-- Salida registrada -->
   <section class="view" id="v-done">
-    <div class="done" id="done"><div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
-      <h1 id="d-title" style="font-size:32px"></h1><p id="d-msg"></p>
-      <button class="btn" id="d-new" data-t="newReg" style="max-width:320px"></button></div>
+    <div class="done out"><div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
+      <h1 data-t="dO" style="font-size:32px"></h1><p data-t="mO"></p>
+      <button class="btn newb" data-t="newReg" style="max-width:320px"></button></div>
+  </section>
+  <!-- Visita: esperar al staff -->
+  <section class="view" id="v-wait">
+    <div class="done"><div class="tick or"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12M6 21h12M7 3c0 5 5 6 5 9s-5 4-5 9M17 3c0 5-5 6-5 9s5 4 5 9"/></svg></div>
+      <span class="dt" data-t="dV"></span>
+      <h1 data-t="wTitle" style="font-size:32px"></h1><p data-t="wMsg"></p>
+      <button class="btn newb" data-t="newReg" style="max-width:320px"></button></div>
+  </section>
+  <!-- Trabajador: aviso EPI -->
+  <section class="view" id="v-warn">
+    <div class="done"><div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
+      <h1 data-t="dW" style="font-size:32px"></h1>
+      <div class="warn"><svg viewBox="0 0 24 24" width="44" height="44" fill="none" stroke="#B34E00" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg><b data-t="wrAlert"></b><p data-t="wrMsg"></p></div>
+      <button class="btn newb" data-t="newReg" style="max-width:320px"></button></div>
   </section>
   <!-- Staff -->
   <section class="view" id="v-staff"></section>
@@ -127,67 +165,109 @@ const COLECCION="registros";
 
 const db=getFirestore(initializeApp(firebaseConfig)),col=collection(db,COLECCION);
 const L={
-es:{loc:"es-ES",pick:"¿Cuál es el motivo de tu visita?",pickSub:"Selecciona una opción para registrarte.",visits:"Visitas",visitsSub:"Visitante o cliente",workers:"Trabajadores",workersSub:"Personal externo / ETT",changeLang:"Cambiar idioma",entry:"Entrada",exit:"Salida",name:"Nombre y apellidos",company:"Empresa",reason:"Motivo de la visita",back:"Volver",
+es:{loc:"es-ES",welcome:"Bienvenido a Yusen Logistics Barcelona. Selecciona una opción para registrarte.",pick:"¿Cuál es el motivo de tu visita?",pickSub:"Selecciona una opción para registrarte.",visits:"Visitas",visitsSub:"Visitante o cliente",workers:"Trabajadores",workersSub:"Personal externo / ETT",changeLang:"Cambiar idioma",entry:"Entrada",exit:"Salida",name:"Nombre y apellidos",company:"Empresa",reason:"Motivo de la visita",back:"Volver",
  tV:"Registro de visita",tW:"Fichaje de trabajador",goIn:"Registrar llegada",goInW:"Registrar entrada",goOut:"Registrar salida",fill:"Completa todos los campos.",noOpen:"No encontramos una entrada abierta con estos datos. Revisa nombre y empresa.",already:"Ya tienes una entrada registrada. Registra primero tu salida.",fail:"No se pudo guardar. Inténtalo de nuevo.",newReg:"Nuevo registro",
- dV:"Llegada registrada",mV:"Bienvenido a Yusen Logistics. Por favor, espere en recepción. Un miembro del personal le entregará chaleco, calzado y una acreditación para acceder.",dW:"Entrada registrada",mW:"Entrada registrada. Que tenga una buena jornada.",dO:"Salida registrada",mO:"Salida registrada. Gracias y hasta pronto."},
-ca:{loc:"ca-ES",pick:"Quin és el motiu de la teva visita?",pickSub:"Selecciona una opció per registrar-te.",visits:"Visites",visitsSub:"Visitant o client",workers:"Treballadors",workersSub:"Personal extern / ETT",changeLang:"Canviar idioma",entry:"Entrada",exit:"Sortida",name:"Nom i cognoms",company:"Empresa",reason:"Motiu de la visita",back:"Tornar",
+ dV:"Llegada registrada",dW:"Entrada registrada",dO:"Salida registrada",mO:"Salida registrada. Gracias y hasta pronto.",
+ wTitle:"Espere a ser atendido",wMsg:"Gracias por registrarse. Por favor, espere aquí a que le atienda el personal de Yusen. Le entregarán un chaleco y una acreditación para poder acceder.",
+ wrAlert:"Atención",wrMsg:"Recuerde que para entrar al almacén es necesario llevar chaleco y botas de seguridad.",coSel:"Selecciona tu empresa",coOther:"Nombre de la empresa (opcional)"},
+ca:{loc:"ca-ES",welcome:"Benvingut a Yusen Logistics Barcelona. Selecciona una opció per registrar-te.",pick:"Quin és el motiu de la teva visita?",pickSub:"Selecciona una opció per registrar-te.",visits:"Visites",visitsSub:"Visitant o client",workers:"Treballadors",workersSub:"Personal extern / ETT",changeLang:"Canviar idioma",entry:"Entrada",exit:"Sortida",name:"Nom i cognoms",company:"Empresa",reason:"Motiu de la visita",back:"Tornar",
  tV:"Registre de visita",tW:"Fitxatge de treballador",goIn:"Registrar arribada",goInW:"Registrar entrada",goOut:"Registrar sortida",fill:"Completa tots els camps.",noOpen:"No trobem cap entrada oberta amb aquestes dades. Revisa nom i empresa.",already:"Ja tens una entrada registrada. Registra primer la sortida.",fail:"No s'ha pogut desar. Torna-ho a provar.",newReg:"Nou registre",
- dV:"Arribada registrada",mV:"Benvingut a Yusen Logistics. Si us plau, esperi a recepció. Un membre del personal li lliurarà armilla, calçat i una acreditació per accedir.",dW:"Entrada registrada",mW:"Entrada registrada. Que tingui una bona jornada.",dO:"Sortida registrada",mO:"Sortida registrada. Gràcies i fins aviat."},
-en:{loc:"en-GB",pick:"What brings you here?",pickSub:"Select an option to sign in.",visits:"Visitors",visitsSub:"Visitor or client",workers:"Workers",workersSub:"External staff / agency",changeLang:"Change language",entry:"Sign in",exit:"Sign out",name:"Full name",company:"Company",reason:"Reason for visit",back:"Back",
+ dV:"Arribada registrada",dW:"Entrada registrada",dO:"Sortida registrada",mO:"Sortida registrada. Gràcies i fins aviat.",
+ wTitle:"Esperi a ser atès",wMsg:"Gràcies per registrar-se. Si us plau, esperi aquí que el personal de Yusen l'atengui. Li lliuraran una armilla i una acreditació per poder accedir.",
+ wrAlert:"Atenció",wrMsg:"Recordi que per entrar al magatzem cal portar armilla i botes de seguretat.",coSel:"Selecciona la teva empresa",coOther:"Nom de l'empresa (opcional)"},
+en:{loc:"en-GB",welcome:"Welcome to Yusen Logistics Barcelona. Please select an option to sign in.",pick:"What brings you here?",pickSub:"Select an option to sign in.",visits:"Visitors",visitsSub:"Visitor or client",workers:"Workers",workersSub:"External staff / agency",changeLang:"Change language",entry:"Sign in",exit:"Sign out",name:"Full name",company:"Company",reason:"Reason for visit",back:"Back",
  tV:"Visitor registration",tW:"Worker clock-in",goIn:"Register arrival",goInW:"Register entry",goOut:"Register exit",fill:"Please fill in all fields.",noOpen:"We couldn't find an open entry with these details. Check name and company.",already:"You already have an open entry. Please sign out first.",fail:"Could not save. Please try again.",newReg:"New registration",
- dV:"Arrival registered",mV:"Welcome to Yusen Logistics. Please wait at reception. A member of staff will give you a safety vest, safety footwear and an access badge.",dW:"Entry registered",mW:"Entry registered. Have a good shift.",dO:"Exit registered",mO:"Exit registered. Thank you and see you soon."},
-fr:{loc:"fr-FR",pick:"Quel est le motif de votre venue ?",pickSub:"Sélectionnez une option pour vous enregistrer.",visits:"Visiteurs",visitsSub:"Visiteur ou client",workers:"Travailleurs",workersSub:"Personnel externe / intérim",changeLang:"Changer de langue",entry:"Entrée",exit:"Sortie",name:"Nom et prénom",company:"Entreprise",reason:"Motif de la visite",back:"Retour",
+ dV:"Arrival registered",dW:"Entry registered",dO:"Exit registered",mO:"Exit registered. Thank you and see you soon.",
+ wTitle:"Please wait to be assisted",wMsg:"Thank you for registering. Please wait here for a member of Yusen staff. They will give you a safety vest and an access badge so you can enter.",
+ wrAlert:"Attention",wrMsg:"Remember: a safety vest and safety boots are required to enter the warehouse.",coSel:"Select your company",coOther:"Company name (optional)"},
+fr:{loc:"fr-FR",welcome:"Bienvenue chez Yusen Logistics Barcelone. Veuillez sélectionner une option pour vous enregistrer.",pick:"Quel est le motif de votre venue ?",pickSub:"Sélectionnez une option pour vous enregistrer.",visits:"Visiteurs",visitsSub:"Visiteur ou client",workers:"Travailleurs",workersSub:"Personnel externe / intérim",changeLang:"Changer de langue",entry:"Entrée",exit:"Sortie",name:"Nom et prénom",company:"Entreprise",reason:"Motif de la visite",back:"Retour",
  tV:"Enregistrement visiteur",tW:"Pointage travailleur",goIn:"Enregistrer l'arrivée",goInW:"Enregistrer l'entrée",goOut:"Enregistrer la sortie",fill:"Veuillez remplir tous les champs.",noOpen:"Aucune entrée ouverte trouvée avec ces données. Vérifiez le nom et l'entreprise.",already:"Vous avez déjà une entrée enregistrée. Enregistrez d'abord votre sortie.",fail:"Échec de l'enregistrement. Réessayez.",newReg:"Nouvel enregistrement",
- dV:"Arrivée enregistrée",mV:"Bienvenue chez Yusen Logistics. Veuillez patienter à l'accueil. Un membre du personnel vous remettra un gilet, des chaussures de sécurité et un badge d'accès.",dW:"Entrée enregistrée",mW:"Entrée enregistrée. Bonne journée de travail.",dO:"Sortie enregistrée",mO:"Sortie enregistrée. Merci et à bientôt."}
+ dV:"Arrivée enregistrée",dW:"Entrée enregistrée",dO:"Sortie enregistrée",mO:"Sortie enregistrée. Merci et à bientôt.",
+ wTitle:"Veuillez patienter",wMsg:"Merci de vous être enregistré. Veuillez patienter ici, un membre du personnel Yusen va s'occuper de vous. Il vous remettra un gilet et un badge d'accès pour pouvoir entrer.",
+ wrAlert:"Attention",wrMsg:"N'oubliez pas : pour entrer dans l'entrepôt, le gilet et les chaussures de sécurité sont obligatoires.",coSel:"Sélectionnez votre entreprise",coOther:"Nom de l'entreprise (facultatif)"},
+pt:{loc:"pt-PT",welcome:"Bem-vindo à Yusen Logistics Barcelona. Selecione uma opção para se registar.",pick:"Qual é o motivo da sua visita?",pickSub:"Selecione uma opção para se registar.",visits:"Visitas",visitsSub:"Visitante ou cliente",workers:"Trabalhadores",workersSub:"Pessoal externo / ETT",changeLang:"Mudar de idioma",entry:"Entrada",exit:"Saída",name:"Nome completo",company:"Empresa",reason:"Motivo da visita",back:"Voltar",
+ tV:"Registo de visita",tW:"Registo de ponto do trabalhador",goIn:"Registar chegada",goInW:"Registar entrada",goOut:"Registar saída",fill:"Preencha todos os campos.",noOpen:"Não encontrámos nenhuma entrada aberta com estes dados. Verifique o nome e a empresa.",already:"Já tem uma entrada registada. Registe primeiro a sua saída.",fail:"Não foi possível guardar. Tente novamente.",newReg:"Novo registo",
+ dV:"Chegada registada",dW:"Entrada registada",dO:"Saída registada",mO:"Saída registada. Obrigado e até breve.",
+ wTitle:"Aguarde para ser atendido",wMsg:"Obrigado pelo seu registo. Por favor, aguarde aqui até ser atendido por um membro da equipa da Yusen. Receberá um colete e uma credencial para poder aceder.",
+ wrAlert:"Atenção",wrMsg:"Lembre-se: para entrar no armazém é obrigatório usar colete e botas de segurança.",coSel:"Selecione a sua empresa",coOther:"Nome da empresa (opcional)"},
+ro:{loc:"ro-RO",welcome:"Bun venit la Yusen Logistics Barcelona. Vă rugăm să selectați o opțiune pentru a vă înregistra.",pick:"Care este motivul vizitei dumneavoastră?",pickSub:"Selectați o opțiune pentru a vă înregistra.",visits:"Vizitatori",visitsSub:"Vizitator sau client",workers:"Angajați",workersSub:"Personal extern / ETT",changeLang:"Schimbă limba",entry:"Intrare",exit:"Ieșire",name:"Nume și prenume",company:"Companie",reason:"Motivul vizitei",back:"Înapoi",
+ tV:"Înregistrare vizitator",tW:"Pontaj angajat",goIn:"Înregistrează sosirea",goInW:"Înregistrează intrarea",goOut:"Înregistrează ieșirea",fill:"Completați toate câmpurile.",noOpen:"Nu am găsit nicio intrare deschisă cu aceste date. Verificați numele și compania.",already:"Aveți deja o intrare înregistrată. Înregistrați mai întâi ieșirea.",fail:"Nu s-a putut salva. Încercați din nou.",newReg:"Înregistrare nouă",
+ dV:"Sosire înregistrată",dW:"Intrare înregistrată",dO:"Ieșire înregistrată",mO:"Ieșire înregistrată. Vă mulțumim și la revedere.",
+ wTitle:"Vă rugăm să așteptați",wMsg:"Vă mulțumim pentru înregistrare. Vă rugăm să așteptați aici până când un membru al personalului Yusen vă preia. Veți primi o vestă și o legitimație de acces pentru a putea intra.",
+ wrAlert:"Atenție",wrMsg:"Rețineți: pentru a intra în depozit este obligatoriu să purtați vestă și bocanci de protecție.",coSel:"Selectați compania",coOther:"Numele companiei (opțional)"},
+ja:{loc:"ja-JP",welcome:"ユーセン・ロジスティクス・バルセロナへようこそ。登録するには、オプションを選択してください。",pick:"ご用件をお選びください",pickSub:"登録するオプションを選択してください。",visits:"来訪者",visitsSub:"ビジターまたはお客様",workers:"作業員",workersSub:"外部スタッフ / 派遣",changeLang:"言語を変更",entry:"入場",exit:"退場",name:"氏名",company:"会社名",reason:"訪問の目的",back:"戻る",
+ tV:"来訪者登録",tW:"作業員の打刻",goIn:"到着を登録",goInW:"入場を登録",goOut:"退場を登録",fill:"すべての項目を入力してください。",noOpen:"この情報に該当する入場記録が見つかりません。氏名と会社名をご確認ください。",already:"すでに入場が登録されています。先に退場を登録してください。",fail:"保存できませんでした。もう一度お試しください。",newReg:"新規登録",
+ dV:"到着を登録しました",dW:"入場を登録しました",dO:"退場を登録しました",mO:"退場を登録しました。ありがとうございました。またのお越しをお待ちしております。",
+ wTitle:"しばらくお待ちください",wMsg:"ご登録ありがとうございます。ユーセンのスタッフが対応いたしますので、こちらでお待ちください。入場用のベストと入館証をお渡しします。",
+ wrAlert:"ご注意",wrMsg:"倉庫に入るには、安全ベストと安全靴の着用が必要です。お忘れなく。",coSel:"会社を選択してください",coOther:"会社名（任意）"}
 };
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
 const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const p2=n=>String(n).padStart(2,"0");
+const toLocal=d=>ymd(d)+"T"+p2(d.getHours())+":"+p2(d.getMinutes());
+/* Para trabajadores la clave usa solo NWT/ETT/CTT/OTROS (sin el texto opcional) */
+const makeKey=(tipo,nombre,empresa)=>[tipo,norm(nombre),norm(tipo==="trabajador"?empresa.split(" · ")[0]:empresa)].join("|");
 let lang="es",tipo="visita",mode="in",timer,unsubs=[];
 const t=k=>L[lang][k];
 
-function show(id){$$(".view").forEach(v=>v.classList.toggle("on",v.id===id));clearTimeout(timer)}
-function applyLang(){document.documentElement.lang=lang;$$("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));updForm()}
+function show(id){try{speechSynthesis.cancel()}catch(e){}$$(".view").forEach(v=>v.classList.toggle("on",v.id===id));clearTimeout(timer)}
+function applyLang(){document.documentElement.lang=lang;$$("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));$$("[data-p]").forEach(e=>e.placeholder=t(e.dataset.p));updForm()}
 function tick(){const n=new Date(),o={weekday:"long",day:"numeric",month:"long",year:"numeric"};
  const txt=n.toLocaleDateString(L[lang].loc,o)+" · "+n.toLocaleTimeString(L[lang].loc,{hour:"2-digit",minute:"2-digit",second:"2-digit"});
  $("#clock").textContent=txt;$("#dt").textContent=txt}
 setInterval(tick,1000);tick();
 
 function updForm(){
- $("#f-title").textContent=tipo==="visita"?t("tV"):t("tW");
+ const w=tipo==="trabajador";
+ $("#f-title").textContent=w?t("tW"):t("tV");
  $("#m-in").classList.toggle("on",mode==="in");$("#m-out").classList.toggle("on",mode==="out");
- $("#reason-wrap").style.display=(tipo==="visita"&&mode==="in")?"block":"none";
- $("#go").textContent=mode==="out"?t("goOut"):(tipo==="visita"?t("goIn"):t("goInW"));
+ $("#w-co-wrap").style.display=w?"block":"none";
+ $("#v-co-wrap").style.display=w?"none":"block";
+ $("#f-coo").style.display=(w&&mode==="in"&&$("#f-cosel").value==="OTROS")?"block":"none";
+ $("#reason-wrap").style.display=(!w&&mode==="in")?"block":"none";
+ $("#go").textContent=mode==="out"?t("goOut"):(w?t("goInW"):t("goIn"));
  $("#err").textContent="";
 }
-function speak(txt){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt);u.lang=L[lang].loc;u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+/* Locución: elige una voz del idioma si el dispositivo la tiene */
+function speak(txt){try{
+ speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt),loc=L[lang].loc.toLowerCase(),vs=speechSynthesis.getVoices();
+ u.lang=L[lang].loc;
+ const v=vs.find(v=>v.lang.replace("_","-").toLowerCase()===loc)||vs.find(v=>v.lang.toLowerCase().startsWith(lang));
+ if(v)u.voice=v;u.rate=.95;speechSynthesis.speak(u)}catch(e){}}
+function prime(){try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}}
 
-$$("[data-l]").forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();show("v-type")});
-$$("[data-type]").forEach(b=>b.onclick=()=>{tipo=b.dataset.type;mode="in";$("#f-name").value=$("#f-co").value=$("#f-re").value="";updForm();show("v-form")});
+$$("[data-l]").forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();show("v-type");speak(t("welcome"))});
+$$("[data-type]").forEach(b=>b.onclick=()=>{tipo=b.dataset.type;mode="in";$("#f-name").value=$("#f-co").value=$("#f-re").value=$("#f-coo").value="";$("#f-cosel").value="";updForm();show("v-form")});
 $("#b-lang").onclick=()=>show("v-lang");$("#b-back").onclick=()=>show("v-type");
 $("#m-in").onclick=()=>{mode="in";updForm()};$("#m-out").onclick=()=>{mode="out";updForm()};
-$("#d-new").onclick=reset;
-function reset(){speechSynthesis?.cancel();show("v-lang")}
+$("#f-cosel").onchange=updForm;
+$$(".newb").forEach(b=>b.onclick=reset);
+function reset(){show("v-lang")}
 
 $("#go").onclick=async()=>{
- const n=$("#f-name").value.trim(),c=$("#f-co").value.trim(),r=$("#f-re").value.trim(),err=$("#err"),btn=$("#go");
- if(!n||!c||(mode==="in"&&tipo==="visita"&&!r)){err.textContent=t("fill");return}
+ prime();
+ const w=tipo==="trabajador",n=$("#f-name").value.trim(),r=$("#f-re").value.trim(),err=$("#err"),btn=$("#go");
+ let c;
+ if(w){const s=$("#f-cosel").value,o=$("#f-coo").value.trim();c=s?(s==="OTROS"&&o&&mode==="in"?"OTROS · "+o:s):""}
+ else c=$("#f-co").value.trim();
+ if(!n||!c||(mode==="in"&&!w&&!r)){err.textContent=t("fill");return}
  btn.disabled=true;err.textContent="";
- const key=[tipo,norm(n),norm(c)].join("|"),now=new Date();
+ const key=makeKey(tipo,n,c),now=new Date();
  try{
   const open=await getDocs(query(col,where("key","==",key),where("abierto","==",true)));
   if(mode==="in"){
    if(!open.empty){err.textContent=t("already");btn.disabled=false;return}
-   await addDoc(col,{tipo,nombre:n,empresa:c,motivo:tipo==="visita"?r:"",key,fecha:ymd(now),entrada:Timestamp.fromDate(now),salida:null,abierto:true,idioma:lang});
+   await addDoc(col,{tipo,nombre:n,empresa:c,motivo:w?"":r,key,fecha:ymd(now),entrada:Timestamp.fromDate(now),salida:null,abierto:true,idioma:lang});
   }else{
    if(open.empty){err.textContent=t("noOpen");btn.disabled=false;return}
    await Promise.all(open.docs.map(d=>updateDoc(doc(db,COLECCION,d.id),{salida:Timestamp.fromDate(now),abierto:false})));
   }
-  const msg=mode==="out"?t("mO"):tipo==="visita"?t("mV"):t("mW");
-  $("#d-title").textContent=mode==="out"?t("dO"):tipo==="visita"?t("dV"):t("dW");
-  $("#d-msg").textContent=msg;$("#done").classList.toggle("out",mode==="out");
-  show("v-done");speak(msg);timer=setTimeout(reset,25000);
+  if(mode==="out"){show("v-done");speak(t("mO"))}
+  else if(!w){show("v-wait");speak(t("wTitle")+". "+t("wMsg"))}
+  else{show("v-warn");speak(t("dW")+". "+t("wrMsg"))}
+  timer=setTimeout(reset,30000);
  }catch(e){console.error(e);err.textContent=t("fail")}
  btn.disabled=false;
 };
@@ -204,17 +284,29 @@ function staff(){
  $("#v-staff").innerHTML=`<div class="panel">
  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h1 style="font-size:28px">Panel de accesos</h1><button class="link noprint" id="sx" style="color:var(--navy)">Cerrar sesión</button></div>
  <div class="kpis"><div class="kpi g"><b id="k1">0</b><span>Dentro ahora</span></div><div class="kpi o"><b id="k2">0</b><span>Visitas dentro</span></div><div class="kpi"><b id="k3">0</b><span>Trabajadores dentro</span></div><div class="kpi"><b id="k4">0</b><span>Salidas en el periodo</span></div></div>
- <div class="h2">Dentro ahora</div><div class="tw"><table><thead><tr><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th></tr></thead><tbody id="tb-in"></tbody></table></div>
+ <div class="h2">Dentro ahora</div><div class="tw"><table><thead><tr><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th class="noprint">Acción</th></tr></thead><tbody id="tb-in"></tbody></table></div>
  <div class="h2">Informe</div>
  <div class="filters"><div><label>Desde</label><input type="date" id="f1" value="${today}"></div><div><label>Hasta</label><input type="date" id="f2" value="${today}"></div>
  <div><label>Tipo</label><select id="ft"><option value="">Todos</option><option value="visita">Visitas</option><option value="trabajador">Trabajadores</option></select></div>
  <div><label>Estado</label><select id="fs"><option value="">Todos</option><option value="in">Dentro</option><option value="out">Han salido</option></select></div>
  <button id="csv">Exportar CSV</button><button id="prt" style="background:var(--orange)">Imprimir</button></div>
- <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Salida</th><th>Duración</th></tr></thead><tbody id="tb-rep"></tbody></table></div>
- <div class="h2 noprint">QR de acceso</div><div class="noprint"><div id="qrbox"></div><p style="margin-top:8px;font-size:13px">Imprime este QR y colócalo en la entrada. Apunta a: <b id="qrurl"></b></p></div></div>`;
+ <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Salida</th><th>Duración</th><th class="noprint">Acción</th></tr></thead><tbody id="tb-rep"></tbody></table></div>
+ <div class="h2 noprint">QR de acceso</div><div class="noprint"><div id="qrbox"></div><p style="margin-top:8px;font-size:13px">Imprime este QR y colócalo en la entrada. Apunta a: <b id="qrurl"></b></p></div>
+ <div class="modal" id="md" hidden><div class="mbox">
+  <h2 id="md-t"></h2><p class="hint" id="md-h"></p>
+  <label for="e-n">Nombre</label><input id="e-n" autocomplete="off">
+  <label for="e-c">Empresa</label><input id="e-c" autocomplete="off">
+  <div id="e-rw"><label for="e-r">Motivo</label><input id="e-r" autocomplete="off"></div>
+  <label for="e-i">Entrada</label><input type="datetime-local" id="e-i">
+  <label for="e-o">Salida</label><input type="datetime-local" id="e-o">
+  <p class="hint">Deja la salida vacía si la persona sigue dentro.</p>
+  <div class="err" id="e-err" role="alert"></div>
+  <div class="mrow"><button class="btn gr" id="e-cancel">Cancelar</button><button class="btn" id="e-save">Guardar</button></div>
+ </div></div></div>`;
  $("#sx").onclick=()=>{unsubs.forEach(u=>u());unsubs=[];reset()};
  const url=location.href.split("#")[0].split("?")[0];$("#qrurl").textContent=url;new QRCode($("#qrbox"),{text:url,width:200,height:200,colorDark:"#0A1F44"});
- let inside=[],rows=[],unRep=null;
+ let inside=[],rows=[],unRep=null,editId=null;
+ const find=id=>inside.find(r=>r.id===id)||rows.find(r=>r.id===id);
  const hm=ts=>ts?ts.toDate().toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"}):"—";
  const dd=ts=>ts?ts.toDate().toLocaleDateString("es-ES"):"";
  const tag=x=>x==="visita"?'<span class="tag t-v">Visita</span>':'<span class="tag t-w">Trabajador</span>';
@@ -222,23 +314,57 @@ function staff(){
  function drawIn(){
   const a=[...inside].sort((x,y)=>x.entrada.toMillis()-y.entrada.toMillis());
   $("#k1").textContent=a.length;$("#k2").textContent=a.filter(r=>r.tipo==="visita").length;$("#k3").textContent=a.filter(r=>r.tipo==="trabajador").length;
-  $("#tb-in").innerHTML=a.map(r=>`<tr><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${dd(r.entrada)} ${hm(r.entrada)}</td></tr>`).join("")||'<tr><td colspan="5">Nadie dentro ahora.</td></tr>';
+  $("#tb-in").innerHTML=a.map(r=>`<tr><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${dd(r.entrada)} ${hm(r.entrada)}</td><td class="noprint"><button class="abtn" data-out="${esc(r.id)}">Marcar salida</button></td></tr>`).join("")||'<tr><td colspan="6">Nadie dentro ahora.</td></tr>';
  }
  function drawRep(){
   const ft=$("#ft").value,fs=$("#fs").value;
   const a=rows.filter(r=>(!ft||r.tipo===ft)&&(!fs||(fs==="in")===r.abierto)).sort((x,y)=>y.entrada.toMillis()-x.entrada.toMillis());
   $("#k4").textContent=a.filter(r=>!r.abierto).length;
-  $("#tb-rep").innerHTML=a.map(r=>`<tr><td>${esc(r.fecha)}</td><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${hm(r.entrada)}</td><td>${r.abierto?'<span class="in">Dentro</span>':hm(r.salida)}</td><td>${dur(r)}</td></tr>`).join("")||'<tr><td colspan="8">Sin registros para este filtro.</td></tr>';
+  $("#tb-rep").innerHTML=a.map(r=>`<tr><td>${esc(r.fecha)}</td><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${hm(r.entrada)}</td><td>${r.abierto?'<span class="in">Dentro</span>':hm(r.salida)}${r.editado?' <span class="ed" title="Editado manualmente">✎</span>':''}</td><td>${dur(r)}</td><td class="noprint"><button class="abtn nv" data-edit="${esc(r.id)}">Editar</button></td></tr>`).join("")||'<tr><td colspan="9">Sin registros para este filtro.</td></tr>';
   drawRep.cur=a;
  }
  function sub(){
   unRep?.();const f1=$("#f1").value,f2=$("#f2").value;
-  unRep=onSnapshot(query(col,where("fecha",">=",f1),where("fecha","<=",f2)),s=>{rows=s.docs.map(d=>d.data());drawRep()});
+  unRep=onSnapshot(query(col,where("fecha",">=",f1),where("fecha","<=",f2)),s=>{rows=s.docs.map(d=>({id:d.id,...d.data()}));drawRep()});
  }
- unsubs.push(onSnapshot(query(col,where("abierto","==",true)),s=>{inside=s.docs.map(d=>d.data());drawIn()}),()=>unRep?.());
+ unsubs.push(onSnapshot(query(col,where("abierto","==",true)),s=>{inside=s.docs.map(d=>({id:d.id,...d.data()}));drawIn()}),()=>unRep?.());
  sub();
  ["f1","f2"].forEach(i=>$("#"+i).onchange=sub);["ft","fs"].forEach(i=>$("#"+i).onchange=drawRep);
  $("#prt").onclick=()=>print();
+
+ /* ---- Editar / marcar salida manual ---- */
+ function openEdit(id,quick){
+  const r=find(id);if(!r)return;editId=id;
+  $("#md-t").textContent=quick?"Marcar salida manual":"Editar registro";
+  $("#md-h").textContent=quick?"Indica la hora real de salida de esta persona.":"Corrige los datos o la hora de entrada y salida.";
+  $("#e-n").value=r.nombre||"";$("#e-c").value=r.empresa||"";$("#e-r").value=r.motivo||"";
+  $("#e-rw").style.display=r.tipo==="visita"?"block":"none";
+  $("#e-i").value=toLocal(r.entrada.toDate());
+  $("#e-o").value=r.salida?toLocal(r.salida.toDate()):(quick?toLocal(new Date()):"");
+  $("#e-err").textContent="";$("#md").hidden=false;
+  (quick?$("#e-o"):$("#e-n")).focus();
+ }
+ const closeEdit=()=>{$("#md").hidden=true;editId=null};
+ $("#tb-in").onclick=e=>{const b=e.target.closest("[data-out]");if(b)openEdit(b.dataset.out,true)};
+ $("#tb-rep").onclick=e=>{const b=e.target.closest("[data-edit]");if(b)openEdit(b.dataset.edit,false)};
+ $("#e-cancel").onclick=closeEdit;
+ $("#md").onclick=e=>{if(e.target.id==="md")closeEdit()};
+ $("#e-save").onclick=async()=>{
+  const r=find(editId),err=$("#e-err");if(!r)return closeEdit();
+  const n=$("#e-n").value.trim(),c=$("#e-c").value.trim(),mo=$("#e-r").value.trim();
+  const ei=$("#e-i").value?new Date($("#e-i").value):null,eo=$("#e-o").value?new Date($("#e-o").value):null;
+  if(!n||!c){err.textContent="Nombre y empresa son obligatorios.";return}
+  if(!ei||isNaN(ei)){err.textContent="La hora de entrada no es válida.";return}
+  if(eo&&(isNaN(eo)||eo<ei)){err.textContent="La salida no puede ser anterior a la entrada.";return}
+  if(eo&&eo.getTime()>Date.now()+60000){err.textContent="La salida no puede ser futura.";return}
+  const btn=$("#e-save");btn.disabled=true;
+  try{
+   await updateDoc(doc(db,COLECCION,editId),{nombre:n,empresa:c,motivo:r.tipo==="visita"?mo:"",key:makeKey(r.tipo,n,c),fecha:ymd(ei),entrada:Timestamp.fromDate(ei),salida:eo?Timestamp.fromDate(eo):null,abierto:!eo,editado:true});
+   closeEdit();
+  }catch(x){console.error(x);err.textContent="No se pudo guardar. Inténtalo de nuevo."}
+  btn.disabled=false;
+ };
+
  $("#csv").onclick=()=>{
   const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
   const lines=[["Fecha","Tipo","Nombre","Empresa","Motivo","Entrada","Salida","Duración"].map(q).join(";")];
