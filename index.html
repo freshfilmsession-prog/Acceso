@@ -82,6 +82,14 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
 .mrow{display:flex;gap:10px}.mrow .btn{margin-top:16px}
 .rc-open{border:0;border-radius:12px;padding:13px 18px;font:900 16px var(--f);background:#D32F2F;color:#fff;cursor:pointer;display:inline-flex;align-items:center;gap:9px;box-shadow:0 4px 14px rgba(211,47,47,.35)}
 .rc-open svg{width:22px;height:22px}.rc-open b{background:#fff;color:#D32F2F;border-radius:20px;padding:1px 10px;font-size:15px}
+.qr-row{display:flex;gap:20px;align-items:stretch;flex-wrap:wrap}.qr-row>div{flex:0 0 auto;max-width:100%}
+.rc-big{flex:1;min-width:250px;min-height:230px;border:0;border-radius:20px;background:linear-gradient(135deg,#E53935,#B71C1C);color:#fff;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:20px;font-family:var(--f);text-align:center;animation:rcglow 1.6s ease-in-out infinite}
+.rc-big:hover{transform:scale(1.015)}.rc-big svg{width:54px;height:54px}
+.rc-bt{font-size:24px;font-weight:900;text-transform:uppercase;letter-spacing:1px}
+.rc-bign{font-size:72px;font-weight:900;line-height:1}
+.rc-bs{font-size:14px;font-weight:700;opacity:.9}
+@keyframes rcglow{0%,100%{box-shadow:0 6px 18px rgba(211,47,47,.4)}50%{box-shadow:0 6px 34px rgba(211,47,47,.85)}}
+@media(prefers-reduced-motion:reduce){.rc-big{animation:none}}
 .rcbox{max-width:1000px}
 .rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .rc-total{display:flex;align-items:center;gap:16px;background:#FDECEC;border:3px solid #D32F2F;border-radius:14px;padding:12px 18px;margin-bottom:14px}
@@ -454,7 +462,7 @@ $("#b-staff").onclick=()=>{
 function staff(){
  const today=ymd(new Date());
  $("#v-staff").innerHTML=`<div class="panel">
- <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h1 style="font-size:28px">Panel de accesos</h1><button class="rc-open noprint" id="rc-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>Recuento de personal <b id="rc-n">0</b></button><button class="link noprint" id="sx" style="color:var(--navy)">Cerrar sesión</button></div>
+ <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h1 style="font-size:28px">Panel de accesos</h1><button class="link noprint" id="sx" style="color:var(--navy)">Cerrar sesión</button></div>
  <div class="seg noprint" style="max-width:440px;margin:14px 0 6px"><button id="tab-a" class="on">Accesos</button><button id="tab-f">Trabajadores fijos</button></div>
  <div id="pane-a">
  <div class="kpis"><div class="kpi g"><b id="k1">0</b><span>Dentro ahora</span></div><div class="kpi o"><b id="k2">0</b><span>Visitas dentro</span></div><div class="kpi"><b id="k3">0</b><span>Trabajadores dentro</span></div><div class="kpi"><b id="k4">0</b><span>Salidas en el periodo</span></div></div>
@@ -465,7 +473,10 @@ function staff(){
  <div><label>Estado</label><select id="fs"><option value="">Todos</option><option value="in">Dentro</option><option value="out">Han salido</option></select></div>
  <button id="csv">Exportar CSV</button><button id="prt" style="background:var(--orange)">Imprimir</button></div>
  <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Salida</th><th>Duración</th><th class="noprint">Acción</th></tr></thead><tbody id="tb-rep"></tbody></table></div>
- <div class="h2 noprint">QR de acceso</div><div class="noprint"><div id="qrbox"></div><p style="margin-top:8px;font-size:13px">Imprime este QR y colócalo en la entrada. Apunta a: <b id="qrurl"></b></p></div>
+ <div class="h2 noprint">QR de acceso y emergencias</div>
+ <div class="noprint qr-row"><div><div id="qrbox"></div><p style="margin-top:8px;font-size:13px">Imprime este QR y colócalo en la entrada. Apunta a: <b id="qrurl"></b></p></div>
+ <button class="rc-big" id="rc-open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>
+  <span class="rc-bt">Recuento de personal</span><span class="rc-bign" id="rc-n">0</span><span class="rc-bs">personas dentro · pulsa en caso de emergencia</span></button></div>
  </div>
  <div id="pane-f" class="noprint" style="display:none">
   <div class="h2">Trabajadores fijos</div>
