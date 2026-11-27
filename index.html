@@ -116,10 +116,12 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
       <!-- Trabajadores: primero empresa (desplegable) -->
       <div id="w-co-wrap">
         <label for="f-cosel" data-t="company"></label>
-        <select id="f-cosel"><option value="" disabled selected data-t="coSel"></option><option>NWT</option><option>ETT</option><option>CTT</option><option>OTROS</option></select>
+        <select id="f-cosel"><option value="" disabled selected data-t="coSel"></option><option>NWT</option><option>ETT</option><option>CTC</option><option>OTROS</option></select>
         <input id="f-coo" data-p="coOther" autocomplete="off" style="margin-top:10px;display:none">
       </div>
-      <label for="f-name" data-t="name"></label><input id="f-name" autocomplete="off">
+      <label for="f-name" data-t="name"></label>
+      <select id="f-nsel" style="display:none"></select>
+      <input id="f-name" autocomplete="off">
       <!-- Visitas: empresa en texto libre -->
       <div id="v-co-wrap"><label for="f-co" data-t="company"></label><input id="f-co" autocomplete="off"></div>
       <div id="reason-wrap"><label for="f-re" data-t="reason"></label><input id="f-re" autocomplete="off"></div>
@@ -131,7 +133,7 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
   <!-- Salida registrada -->
   <section class="view" id="v-done">
     <div class="done out"><div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg></div>
-      <h1 data-t="dO" style="font-size:32px"></h1><p data-t="mO"></p>
+      <h1 data-t="dO" style="font-size:32px"></h1><p id="done-msg" style="font-size:24px;font-weight:800"></p>
       <button class="btn newb" data-t="newReg" style="max-width:320px"></button></div>
   </section>
   <!-- Visita: esperar al staff -->
@@ -155,7 +157,7 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore,collection,addDoc,updateDoc,doc,getDocs,query,where,onSnapshot,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore,collection,addDoc,updateDoc,deleteDoc,doc,getDocs,query,where,onSnapshot,Timestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ====== CONFIGURACIÓN ====== */
 const firebaseConfig={apiKey:"AIzaSyAcK6twef3fljQXy-TC5iaQTRBhhHV45QA",authDomain:"yusen-accesos.firebaseapp.com",projectId:"yusen-accesos",appId:"1:569296695889:web:c03376482faa5faeb57e70"};
@@ -163,43 +165,44 @@ const STAFF_PIN="2468";            // cambia este PIN
 const COLECCION="registros";
 /* =========================== */
 
-const db=getFirestore(initializeApp(firebaseConfig)),col=collection(db,COLECCION);
+const db=getFirestore(initializeApp(firebaseConfig)),col=collection(db,COLECCION),colF=collection(db,"trabajadores_fijos");
+const EMPRESAS_FIJAS=["NWT","ETT","CTC"];
 const L={
 es:{loc:"es-ES",welcome:"Bienvenido a Yusen Logistics Barcelona. Selecciona una opción para registrarte.",pick:"¿Cuál es el motivo de tu visita?",pickSub:"Selecciona una opción para registrarte.",visits:"Visitas",visitsSub:"Visitante o cliente",workers:"Trabajadores",workersSub:"Personal externo / ETT",changeLang:"Cambiar idioma",entry:"Entrada",exit:"Salida",name:"Nombre y apellidos",company:"Empresa",reason:"Motivo de la visita",back:"Volver",
  tV:"Registro de visita",tW:"Fichaje de trabajador",goIn:"Registrar llegada",goInW:"Registrar entrada",goOut:"Registrar salida",fill:"Completa todos los campos.",noOpen:"No encontramos una entrada abierta con estos datos. Revisa nombre y empresa.",already:"Ya tienes una entrada registrada. Registra primero tu salida.",fail:"No se pudo guardar. Inténtalo de nuevo.",newReg:"Nuevo registro",
  dV:"Llegada registrada",dW:"Entrada registrada",dO:"Salida registrada",mO:"Salida registrada. Gracias y hasta pronto.",
  wTitle:"Espere a ser atendido",wMsg:"Gracias por registrarse. Por favor, espere aquí a que le atienda el personal de Yusen. Le entregarán un chaleco y una acreditación para poder acceder.",
- wrAlert:"Atención",wrMsg:"Recuerde que para entrar al almacén es necesario llevar chaleco y botas de seguridad.",coSel:"Selecciona tu empresa",coOther:"Nombre de la empresa (opcional)"},
+ wrAlert:"Atención",wrMsg:"Recuerde que para entrar al almacén es necesario llevar chaleco y botas de seguridad.",coSel:"Selecciona tu empresa",coOther:"Nombre de la empresa (opcional)",nameSel:"Selecciona tu nombre",nameOther:"Mi nombre no está en la lista",bye:"Salida registrada. ¡Hasta mañana!",bye5:"Salida registrada. ¡Buen fin de semana!"},
 ca:{loc:"ca-ES",welcome:"Benvingut a Yusen Logistics Barcelona. Selecciona una opció per registrar-te.",pick:"Quin és el motiu de la teva visita?",pickSub:"Selecciona una opció per registrar-te.",visits:"Visites",visitsSub:"Visitant o client",workers:"Treballadors",workersSub:"Personal extern / ETT",changeLang:"Canviar idioma",entry:"Entrada",exit:"Sortida",name:"Nom i cognoms",company:"Empresa",reason:"Motiu de la visita",back:"Tornar",
  tV:"Registre de visita",tW:"Fitxatge de treballador",goIn:"Registrar arribada",goInW:"Registrar entrada",goOut:"Registrar sortida",fill:"Completa tots els camps.",noOpen:"No trobem cap entrada oberta amb aquestes dades. Revisa nom i empresa.",already:"Ja tens una entrada registrada. Registra primer la sortida.",fail:"No s'ha pogut desar. Torna-ho a provar.",newReg:"Nou registre",
  dV:"Arribada registrada",dW:"Entrada registrada",dO:"Sortida registrada",mO:"Sortida registrada. Gràcies i fins aviat.",
  wTitle:"Esperi a ser atès",wMsg:"Gràcies per registrar-se. Si us plau, esperi aquí que el personal de Yusen l'atengui. Li lliuraran una armilla i una acreditació per poder accedir.",
- wrAlert:"Atenció",wrMsg:"Recordi que per entrar al magatzem cal portar armilla i botes de seguretat.",coSel:"Selecciona la teva empresa",coOther:"Nom de l'empresa (opcional)"},
+ wrAlert:"Atenció",wrMsg:"Recordi que per entrar al magatzem cal portar armilla i botes de seguretat.",coSel:"Selecciona la teva empresa",coOther:"Nom de l'empresa (opcional)",nameSel:"Selecciona el teu nom",nameOther:"El meu nom no és a la llista",bye:"Sortida registrada. Fins demà!",bye5:"Sortida registrada. Bon cap de setmana!"},
 en:{loc:"en-GB",welcome:"Welcome to Yusen Logistics Barcelona. Please select an option to sign in.",pick:"What brings you here?",pickSub:"Select an option to sign in.",visits:"Visitors",visitsSub:"Visitor or client",workers:"Workers",workersSub:"External staff / agency",changeLang:"Change language",entry:"Sign in",exit:"Sign out",name:"Full name",company:"Company",reason:"Reason for visit",back:"Back",
  tV:"Visitor registration",tW:"Worker clock-in",goIn:"Register arrival",goInW:"Register entry",goOut:"Register exit",fill:"Please fill in all fields.",noOpen:"We couldn't find an open entry with these details. Check name and company.",already:"You already have an open entry. Please sign out first.",fail:"Could not save. Please try again.",newReg:"New registration",
  dV:"Arrival registered",dW:"Entry registered",dO:"Exit registered",mO:"Exit registered. Thank you and see you soon.",
  wTitle:"Please wait to be assisted",wMsg:"Thank you for registering. Please wait here for a member of Yusen staff. They will give you a safety vest and an access badge so you can enter.",
- wrAlert:"Attention",wrMsg:"Remember: a safety vest and safety boots are required to enter the warehouse.",coSel:"Select your company",coOther:"Company name (optional)"},
+ wrAlert:"Attention",wrMsg:"Remember: a safety vest and safety boots are required to enter the warehouse.",coSel:"Select your company",coOther:"Company name (optional)",nameSel:"Select your name",nameOther:"My name isn't on the list",bye:"Exit registered. See you tomorrow!",bye5:"Exit registered. Have a great weekend!"},
 fr:{loc:"fr-FR",welcome:"Bienvenue chez Yusen Logistics Barcelone. Veuillez sélectionner une option pour vous enregistrer.",pick:"Quel est le motif de votre venue ?",pickSub:"Sélectionnez une option pour vous enregistrer.",visits:"Visiteurs",visitsSub:"Visiteur ou client",workers:"Travailleurs",workersSub:"Personnel externe / intérim",changeLang:"Changer de langue",entry:"Entrée",exit:"Sortie",name:"Nom et prénom",company:"Entreprise",reason:"Motif de la visite",back:"Retour",
  tV:"Enregistrement visiteur",tW:"Pointage travailleur",goIn:"Enregistrer l'arrivée",goInW:"Enregistrer l'entrée",goOut:"Enregistrer la sortie",fill:"Veuillez remplir tous les champs.",noOpen:"Aucune entrée ouverte trouvée avec ces données. Vérifiez le nom et l'entreprise.",already:"Vous avez déjà une entrée enregistrée. Enregistrez d'abord votre sortie.",fail:"Échec de l'enregistrement. Réessayez.",newReg:"Nouvel enregistrement",
  dV:"Arrivée enregistrée",dW:"Entrée enregistrée",dO:"Sortie enregistrée",mO:"Sortie enregistrée. Merci et à bientôt.",
  wTitle:"Veuillez patienter",wMsg:"Merci de vous être enregistré. Veuillez patienter ici, un membre du personnel Yusen va s'occuper de vous. Il vous remettra un gilet et un badge d'accès pour pouvoir entrer.",
- wrAlert:"Attention",wrMsg:"N'oubliez pas : pour entrer dans l'entrepôt, le gilet et les chaussures de sécurité sont obligatoires.",coSel:"Sélectionnez votre entreprise",coOther:"Nom de l'entreprise (facultatif)"},
+ wrAlert:"Attention",wrMsg:"N'oubliez pas : pour entrer dans l'entrepôt, le gilet et les chaussures de sécurité sont obligatoires.",coSel:"Sélectionnez votre entreprise",coOther:"Nom de l'entreprise (facultatif)",nameSel:"Sélectionnez votre nom",nameOther:"Mon nom n'est pas dans la liste",bye:"Sortie enregistrée. À demain !",bye5:"Sortie enregistrée. Bon week-end !"},
 pt:{loc:"pt-PT",welcome:"Bem-vindo à Yusen Logistics Barcelona. Selecione uma opção para se registar.",pick:"Qual é o motivo da sua visita?",pickSub:"Selecione uma opção para se registar.",visits:"Visitas",visitsSub:"Visitante ou cliente",workers:"Trabalhadores",workersSub:"Pessoal externo / ETT",changeLang:"Mudar de idioma",entry:"Entrada",exit:"Saída",name:"Nome completo",company:"Empresa",reason:"Motivo da visita",back:"Voltar",
  tV:"Registo de visita",tW:"Registo de ponto do trabalhador",goIn:"Registar chegada",goInW:"Registar entrada",goOut:"Registar saída",fill:"Preencha todos os campos.",noOpen:"Não encontrámos nenhuma entrada aberta com estes dados. Verifique o nome e a empresa.",already:"Já tem uma entrada registada. Registe primeiro a sua saída.",fail:"Não foi possível guardar. Tente novamente.",newReg:"Novo registo",
  dV:"Chegada registada",dW:"Entrada registada",dO:"Saída registada",mO:"Saída registada. Obrigado e até breve.",
  wTitle:"Aguarde para ser atendido",wMsg:"Obrigado pelo seu registo. Por favor, aguarde aqui até ser atendido por um membro da equipa da Yusen. Receberá um colete e uma credencial para poder aceder.",
- wrAlert:"Atenção",wrMsg:"Lembre-se: para entrar no armazém é obrigatório usar colete e botas de segurança.",coSel:"Selecione a sua empresa",coOther:"Nome da empresa (opcional)"},
+ wrAlert:"Atenção",wrMsg:"Lembre-se: para entrar no armazém é obrigatório usar colete e botas de segurança.",coSel:"Selecione a sua empresa",coOther:"Nome da empresa (opcional)",nameSel:"Selecione o seu nome",nameOther:"O meu nome não está na lista",bye:"Saída registada. Até amanhã!",bye5:"Saída registada. Bom fim de semana!"},
 ro:{loc:"ro-RO",welcome:"Bun venit la Yusen Logistics Barcelona. Vă rugăm să selectați o opțiune pentru a vă înregistra.",pick:"Care este motivul vizitei dumneavoastră?",pickSub:"Selectați o opțiune pentru a vă înregistra.",visits:"Vizitatori",visitsSub:"Vizitator sau client",workers:"Angajați",workersSub:"Personal extern / ETT",changeLang:"Schimbă limba",entry:"Intrare",exit:"Ieșire",name:"Nume și prenume",company:"Companie",reason:"Motivul vizitei",back:"Înapoi",
  tV:"Înregistrare vizitator",tW:"Pontaj angajat",goIn:"Înregistrează sosirea",goInW:"Înregistrează intrarea",goOut:"Înregistrează ieșirea",fill:"Completați toate câmpurile.",noOpen:"Nu am găsit nicio intrare deschisă cu aceste date. Verificați numele și compania.",already:"Aveți deja o intrare înregistrată. Înregistrați mai întâi ieșirea.",fail:"Nu s-a putut salva. Încercați din nou.",newReg:"Înregistrare nouă",
  dV:"Sosire înregistrată",dW:"Intrare înregistrată",dO:"Ieșire înregistrată",mO:"Ieșire înregistrată. Vă mulțumim și la revedere.",
  wTitle:"Vă rugăm să așteptați",wMsg:"Vă mulțumim pentru înregistrare. Vă rugăm să așteptați aici până când un membru al personalului Yusen vă preia. Veți primi o vestă și o legitimație de acces pentru a putea intra.",
- wrAlert:"Atenție",wrMsg:"Rețineți: pentru a intra în depozit este obligatoriu să purtați vestă și bocanci de protecție.",coSel:"Selectați compania",coOther:"Numele companiei (opțional)"},
+ wrAlert:"Atenție",wrMsg:"Rețineți: pentru a intra în depozit este obligatoriu să purtați vestă și bocanci de protecție.",coSel:"Selectați compania",coOther:"Numele companiei (opțional)",nameSel:"Selectați numele",nameOther:"Numele meu nu este în listă",bye:"Ieșire înregistrată. Pe mâine!",bye5:"Ieșire înregistrată. Weekend plăcut!"},
 ja:{loc:"ja-JP",welcome:"ユーセン・ロジスティクス・バルセロナへようこそ。登録するには、オプションを選択してください。",pick:"ご用件をお選びください",pickSub:"登録するオプションを選択してください。",visits:"来訪者",visitsSub:"ビジターまたはお客様",workers:"作業員",workersSub:"外部スタッフ / 派遣",changeLang:"言語を変更",entry:"入場",exit:"退場",name:"氏名",company:"会社名",reason:"訪問の目的",back:"戻る",
  tV:"来訪者登録",tW:"作業員の打刻",goIn:"到着を登録",goInW:"入場を登録",goOut:"退場を登録",fill:"すべての項目を入力してください。",noOpen:"この情報に該当する入場記録が見つかりません。氏名と会社名をご確認ください。",already:"すでに入場が登録されています。先に退場を登録してください。",fail:"保存できませんでした。もう一度お試しください。",newReg:"新規登録",
  dV:"到着を登録しました",dW:"入場を登録しました",dO:"退場を登録しました",mO:"退場を登録しました。ありがとうございました。またのお越しをお待ちしております。",
  wTitle:"しばらくお待ちください",wMsg:"ご登録ありがとうございます。ユーセンのスタッフが対応いたしますので、こちらでお待ちください。入場用のベストと入館証をお渡しします。",
- wrAlert:"ご注意",wrMsg:"倉庫に入るには、安全ベストと安全靴の着用が必要です。お忘れなく。",coSel:"会社を選択してください",coOther:"会社名（任意）"}
+ wrAlert:"ご注意",wrMsg:"倉庫に入るには、安全ベストと安全靴の着用が必要です。お忘れなく。",coSel:"会社を選択してください",coOther:"会社名（任意）",nameSel:"お名前を選択してください",nameOther:"リストに名前がありません",bye:"退場を登録しました。また明日！",bye5:"退場を登録しました。良い週末を！"}
 };
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -207,13 +210,13 @@ const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").re
 const ymd=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const p2=n=>String(n).padStart(2,"0");
 const toLocal=d=>ymd(d)+"T"+p2(d.getHours())+":"+p2(d.getMinutes());
-/* Para trabajadores la clave usa solo NWT/ETT/CTT/OTROS (sin el texto opcional) */
+/* Para trabajadores la clave usa solo NWT/ETT/CTC/OTROS (sin el texto opcional) */
 const makeKey=(tipo,nombre,empresa)=>[tipo,norm(nombre),norm(tipo==="trabajador"?empresa.split(" · ")[0]:empresa)].join("|");
 let lang="es",tipo="visita",mode="in",timer,unsubs=[];
 const t=k=>L[lang][k];
 
 function show(id){try{speechSynthesis.cancel()}catch(e){}$$(".view").forEach(v=>v.classList.toggle("on",v.id===id));clearTimeout(timer)}
-function applyLang(){document.documentElement.lang=lang;$$("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));$$("[data-p]").forEach(e=>e.placeholder=t(e.dataset.p));updForm()}
+function applyLang(){document.documentElement.lang=lang;$$("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));$$("[data-p]").forEach(e=>e.placeholder=t(e.dataset.p));fillNames();updForm()}
 function tick(){const n=new Date(),o={weekday:"long",day:"numeric",month:"long",year:"numeric"};
  const txt=n.toLocaleDateString(L[lang].loc,o)+" · "+n.toLocaleTimeString(L[lang].loc,{hour:"2-digit",minute:"2-digit",second:"2-digit"});
  $("#clock").textContent=txt;$("#dt").textContent=txt}
@@ -226,10 +229,34 @@ function updForm(){
  $("#w-co-wrap").style.display=w?"block":"none";
  $("#v-co-wrap").style.display=w?"none":"block";
  $("#f-coo").style.display=(w&&mode==="in"&&$("#f-cosel").value==="OTROS")?"block":"none";
+ updName();
  $("#reason-wrap").style.display=(!w&&mode==="in")?"block":"none";
  $("#go").textContent=mode==="out"?t("goOut"):(w?t("goInW"):t("goIn"));
  $("#err").textContent="";
 }
+/* ---- Trabajadores fijos: desplegable de nombres ---- */
+let fijos={NWT:[],ETT:[],CTC:[]},fijosRaw=[],onFijos=null;
+const listActive=()=>tipo==="trabajador"&&(fijos[$("#f-cosel").value]||[]).length>0;
+function fillNames(){
+ const sel=$("#f-nsel"),co=$("#f-cosel").value,cur=sel.value,list=fijos[co]||[];
+ sel.innerHTML='<option value="" disabled selected>'+esc(t("nameSel"))+'</option>'+list.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join("")+'<option value="__other">'+esc(t("nameOther"))+'</option>';
+ sel.value=[...sel.options].some(o=>o.value===cur)?cur:"";
+}
+function updName(){
+ const on=listActive(),other=on&&$("#f-nsel").value==="__other";
+ $("#f-nsel").style.display=on?"block":"none";
+ $("#f-name").style.display=(!on||other)?"block":"none";
+ $("#f-name").style.marginTop=on?"10px":"0";
+}
+const getName=()=>{if(listActive()){const v=$("#f-nsel").value;return v==="__other"?$("#f-name").value.trim():v}return $("#f-name").value.trim()};
+onSnapshot(colF,s=>{
+ fijosRaw=s.docs.map(d=>({id:d.id,...d.data()}));
+ fijos={NWT:[],ETT:[],CTC:[]};
+ fijosRaw.forEach(r=>fijos[r.empresa]&&fijos[r.empresa].push(r.nombre));
+ Object.values(fijos).forEach(a=>a.sort((x,y)=>x.localeCompare(y,"es")));
+ fillNames();updName();onFijos&&onFijos();
+},e=>console.warn("trabajadores_fijos:",e));
+
 /* Locución: elige una voz del idioma si el dispositivo la tiene */
 function speak(txt){try{
  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(txt),loc=L[lang].loc.toLowerCase(),vs=speechSynthesis.getVoices();
@@ -239,16 +266,17 @@ function speak(txt){try{
 function prime(){try{const u=new SpeechSynthesisUtterance(" ");u.volume=0;speechSynthesis.speak(u)}catch(e){}}
 
 $$("[data-l]").forEach(b=>b.onclick=()=>{lang=b.dataset.l;applyLang();show("v-type");speak(t("welcome"))});
-$$("[data-type]").forEach(b=>b.onclick=()=>{tipo=b.dataset.type;mode="in";$("#f-name").value=$("#f-co").value=$("#f-re").value=$("#f-coo").value="";$("#f-cosel").value="";updForm();show("v-form")});
+$$("[data-type]").forEach(b=>b.onclick=()=>{tipo=b.dataset.type;mode="in";$("#f-name").value=$("#f-co").value=$("#f-re").value=$("#f-coo").value="";$("#f-cosel").value="";$("#f-nsel").value="";fillNames();updForm();show("v-form")});
 $("#b-lang").onclick=()=>show("v-lang");$("#b-back").onclick=()=>show("v-type");
 $("#m-in").onclick=()=>{mode="in";updForm()};$("#m-out").onclick=()=>{mode="out";updForm()};
-$("#f-cosel").onchange=updForm;
+$("#f-cosel").onchange=()=>{$("#f-nsel").value="";$("#f-name").value="";fillNames();updForm()};
+$("#f-nsel").onchange=updName;
 $$(".newb").forEach(b=>b.onclick=reset);
 function reset(){show("v-lang")}
 
 $("#go").onclick=async()=>{
  prime();
- const w=tipo==="trabajador",n=$("#f-name").value.trim(),r=$("#f-re").value.trim(),err=$("#err"),btn=$("#go");
+ const w=tipo==="trabajador",n=getName(),r=$("#f-re").value.trim(),err=$("#err"),btn=$("#go");
  let c;
  if(w){const s=$("#f-cosel").value,o=$("#f-coo").value.trim();c=s?(s==="OTROS"&&o&&mode==="in"?"OTROS · "+o:s):""}
  else c=$("#f-co").value.trim();
@@ -264,7 +292,11 @@ $("#go").onclick=async()=>{
    if(open.empty){err.textContent=t("noOpen");btn.disabled=false;return}
    await Promise.all(open.docs.map(d=>updateDoc(doc(db,COLECCION,d.id),{salida:Timestamp.fromDate(now),abierto:false})));
   }
-  if(mode==="out"){show("v-done");speak(t("mO"))}
+  if(mode==="out"){
+   const d=now.getDay();
+   const msg=w&&d>=1&&d<=4?t("bye"):w&&d===5?t("bye5"):t("mO");
+   $("#done-msg").textContent=msg;show("v-done");speak(msg);
+  }
   else if(!w){show("v-wait");speak(t("wTitle")+". "+t("wMsg"))}
   else{show("v-warn");speak(t("dW")+". "+t("wrMsg"))}
   timer=setTimeout(reset,30000);
@@ -283,6 +315,8 @@ function staff(){
  const today=ymd(new Date());
  $("#v-staff").innerHTML=`<div class="panel">
  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h1 style="font-size:28px">Panel de accesos</h1><button class="link noprint" id="sx" style="color:var(--navy)">Cerrar sesión</button></div>
+ <div class="seg noprint" style="max-width:440px;margin:14px 0 6px"><button id="tab-a" class="on">Accesos</button><button id="tab-f">Trabajadores fijos</button></div>
+ <div id="pane-a">
  <div class="kpis"><div class="kpi g"><b id="k1">0</b><span>Dentro ahora</span></div><div class="kpi o"><b id="k2">0</b><span>Visitas dentro</span></div><div class="kpi"><b id="k3">0</b><span>Trabajadores dentro</span></div><div class="kpi"><b id="k4">0</b><span>Salidas en el periodo</span></div></div>
  <div class="h2">Dentro ahora</div><div class="tw"><table><thead><tr><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th class="noprint">Acción</th></tr></thead><tbody id="tb-in"></tbody></table></div>
  <div class="h2">Informe</div>
@@ -292,6 +326,16 @@ function staff(){
  <button id="csv">Exportar CSV</button><button id="prt" style="background:var(--orange)">Imprimir</button></div>
  <div class="tw"><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Salida</th><th>Duración</th><th class="noprint">Acción</th></tr></thead><tbody id="tb-rep"></tbody></table></div>
  <div class="h2 noprint">QR de acceso</div><div class="noprint"><div id="qrbox"></div><p style="margin-top:8px;font-size:13px">Imprime este QR y colócalo en la entrada. Apunta a: <b id="qrurl"></b></p></div>
+ </div>
+ <div id="pane-f" class="noprint" style="display:none">
+  <div class="h2">Trabajadores fijos</div>
+  <p class="hint" style="font-size:13px;opacity:.75;margin-bottom:6px">Los trabajadores que guardes aquí aparecerán en un desplegable al registrarse (según su empresa), sin tener que escribir el nombre.</p>
+  <div class="filters"><div style="flex:0 0 140px;min-width:120px"><label for="fx-co">Empresa</label><select id="fx-co"><option>NWT</option><option>ETT</option><option>CTC</option></select></div>
+  <div style="flex:2;min-width:200px"><label for="fx-n">Nombre y apellidos</label><input id="fx-n" autocomplete="off"></div>
+  <button id="fx-add">Añadir</button></div>
+  <div class="err" id="fx-err" role="alert"></div>
+  <div id="fx-list"></div>
+ </div>
  <div class="modal" id="md" hidden><div class="mbox">
   <h2 id="md-t"></h2><p class="hint" id="md-h"></p>
   <label for="e-n">Nombre</label><input id="e-n" autocomplete="off">
@@ -303,7 +347,36 @@ function staff(){
   <div class="err" id="e-err" role="alert"></div>
   <div class="mrow"><button class="btn gr" id="e-cancel">Cancelar</button><button class="btn" id="e-save">Guardar</button></div>
  </div></div></div>`;
- $("#sx").onclick=()=>{unsubs.forEach(u=>u());unsubs=[];reset()};
+ $("#sx").onclick=()=>{unsubs.forEach(u=>u());unsubs=[];onFijos=null;reset()};
+ /* ---- Pestañas ---- */
+ const tabs=a=>{$("#pane-a").style.display=a?"block":"none";$("#pane-f").style.display=a?"none":"block";$("#tab-a").classList.toggle("on",a);$("#tab-f").classList.toggle("on",!a)};
+ $("#tab-a").onclick=()=>tabs(true);$("#tab-f").onclick=()=>tabs(false);
+ /* ---- Trabajadores fijos ---- */
+ function drawFijos(){
+  const box=$("#fx-list");if(!box)return;
+  box.innerHTML=EMPRESAS_FIJAS.map(c=>{
+   const a=fijosRaw.filter(r=>r.empresa===c).sort((x,y)=>x.nombre.localeCompare(y.nombre,"es"));
+   return `<div class="h2">${c} <span style="font-weight:600;font-size:14px;opacity:.6">(${a.length})</span></div><div class="tw"><table><tbody>`+
+    (a.map(r=>`<tr><td style="width:100%">${esc(r.nombre)}</td><td><button class="abtn nv" data-fdel="${esc(r.id)}">Eliminar</button></td></tr>`).join("")||'<tr><td>Sin trabajadores guardados.</td></tr>')+`</tbody></table></div>`;
+  }).join("");
+ }
+ onFijos=drawFijos;drawFijos();
+ $("#fx-list").onclick=async e=>{
+  const b=e.target.closest("[data-fdel]");if(!b)return;
+  const r=fijosRaw.find(x=>x.id===b.dataset.fdel);if(!r||!confirm("¿Eliminar a "+r.nombre+" de "+r.empresa+"?"))return;
+  try{await deleteDoc(doc(db,"trabajadores_fijos",r.id))}catch(x){console.error(x);$("#fx-err").textContent="No se pudo eliminar. Inténtalo de nuevo."}
+ };
+ const addFijo=async()=>{
+  const c=$("#fx-co").value,n=$("#fx-n").value.trim().replace(/\s+/g," "),err=$("#fx-err");err.textContent="";
+  if(!n){err.textContent="Escribe el nombre del trabajador.";return}
+  if(fijosRaw.some(r=>r.empresa===c&&norm(r.nombre)===norm(n))){err.textContent="Ese trabajador ya está guardado en "+c+".";return}
+  const btn=$("#fx-add");btn.disabled=true;
+  try{await addDoc(colF,{empresa:c,nombre:n});$("#fx-n").value="";$("#fx-n").focus()}
+  catch(x){console.error(x);err.textContent="No se pudo guardar. Revisa los permisos de Firebase (colección trabajadores_fijos)."}
+  btn.disabled=false;
+ };
+ $("#fx-add").onclick=addFijo;
+ $("#fx-n").onkeydown=e=>{if(e.key==="Enter")addFijo()};
  const url=location.href.split("#")[0].split("?")[0];$("#qrurl").textContent=url;new QRCode($("#qrbox"),{text:url,width:200,height:200,colorDark:"#0A1F44"});
  let inside=[],rows=[],unRep=null,editId=null;
  const find=id=>inside.find(r=>r.id===id)||rows.find(r=>r.id===id);
