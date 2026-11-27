@@ -114,6 +114,12 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
 .rc-dh{margin:12px 0 0;font-weight:800;font-size:13px;color:var(--ok);text-transform:uppercase;letter-spacing:.5px}
 .rc-of{font-size:14px;font-weight:600;opacity:.6}
 .rc-z.done{opacity:1}.rc-z.done::before{opacity:.22}
+.rc-z.out{opacity:1}.rc-z.out::before{display:none}
+.rc-pillw{position:absolute;text-align:center;pointer-events:none}
+.rc-pill{display:inline-block;border:2px solid #fff;border-radius:20px;padding:1px 9px;font:800 11px var(--f);box-shadow:0 1px 5px rgba(0,0,0,.4)}
+.rc-sub{margin-top:10px;padding-top:6px;border-top:2px dashed var(--line)}
+.rc-sh2{font-size:14px;font-weight:600}.rc-sh2 b{font-weight:900;font-size:16px}.rc-sh2 span{opacity:.7}
+.fx-as{width:auto;padding:8px 10px;font-size:14px;border-radius:8px}
 .rc-sheet{display:none}
 .rc-none{margin-top:6px;font-size:14px;opacity:.65}.rc-old{color:#C62828;font-style:normal;font-weight:800}
 @media(max-width:700px){.rc-cols{grid-template-columns:1fr}}
@@ -222,8 +228,12 @@ const IMG_W=354,IMG_H=593;                       // tamaño del plano en píxele
 const ZONAS=[                                    // rects: [x1,y1,x2,y2] sobre el plano
  {k:"CTC",zona:"Zona amarilla · Toyota",color:"#F2C200",txt:"#1a1a1a",rects:[[0,114,108,303]]},
  {k:"NWT",zona:"Zona azul",color:"#3F6FB5",txt:"#fff",rects:[[0,304,108,416]]},
- {k:"ETT",zona:"Zonas rojas (2)",color:"#E01E1E",txt:"#fff",rects:[[148,252,260,363],[0,416,110,498]]}
+ {k:"ETT",zona:"Zonas rojas",color:"#E01E1E",txt:"#fff",rects:[[148,252,260,363],[0,416,110,498]],
+  areas:[ /* áreas dentro de las zonas rojas (ajusta los rectángulos si hace falta) */
+   {k:"Bitron",tag:"BITRON",rects:[[148,252,260,363]]},
+   {k:"Packstation",tag:"PACKST.",rects:[[0,416,110,498]]}]}
 ];
+const areasOf=c=>(ZONAS.find(z=>z.k===c)||{}).areas||[];
 /* ================================================== */
 const L={
 es:{loc:"es-ES",welcome:"Bienvenido a Yusen Logistics Barcelona. Selecciona una opción para registrarte.",pick:"¿Cuál es el motivo de tu visita?",pickSub:"Selecciona una opción para registrarte.",visits:"Visitas",visitsSub:"Visitante o cliente",workers:"Trabajadores",workersSub:"Personal externo / ETT",changeLang:"Cambiar idioma",entry:"Entrada",exit:"Salida",name:"Nombre y apellidos",company:"Empresa",reason:"Motivo de la visita",back:"Volver",
@@ -496,6 +506,7 @@ function staff(){
   <div class="h2">Trabajadores fijos</div>
   <p class="hint" style="font-size:13px;opacity:.75;margin-bottom:6px">Los trabajadores que guardes aquí aparecerán en un desplegable al registrarse (según su empresa), sin tener que escribir el nombre.</p>
   <div class="filters"><div style="flex:0 0 140px;min-width:120px"><label for="fx-co">Empresa</label><select id="fx-co"><option>NWT</option><option>ETT</option><option>CTC</option></select></div>
+  <div id="fx-aw" style="flex:0 0 200px;min-width:150px;display:none"><label for="fx-ar">Área de trabajo</label><select id="fx-ar"></select></div>
   <div style="flex:2;min-width:200px"><label for="fx-n">Nombre y apellidos</label><input id="fx-n" autocomplete="off"></div>
   <button id="fx-add">Añadir</button></div>
   <div class="err" id="fx-err" role="alert"></div>
@@ -548,45 +559,84 @@ function staff(){
    (g[k]||g.OTROS).push(r);
   });
   const total=inside.length,nv=g.VISITAS.length,found=inside.filter(r=>r.localizado).length,miss=total-found;
+  const pend=a=>a.filter(r=>!r.localizado);
   const sub=r=>r.tipo==="trabajador"&&(r.empresa||"").includes(" · ")?esc(r.empresa.split(" · ")[1])+" · ":"";
   const old=r=>r.fecha!==today?'<i class="rc-old">⚠ entró el '+esc(dd(r.entrada))+'</i> ':"";
   const row=r=>`<li class="rc-p${r.localizado?" ok":""}" data-loc="${esc(r.id)}" role="checkbox" aria-checked="${!!r.localizado}" tabindex="0"><span class="rc-ck">${r.localizado?"✓":""}</span><b>${esc(r.nombre)}</b><span>${r.localizado?"localizado "+hm(r.localizadoEn):sub(r)+old(r)+hm(r.entrada)}</span></li>`;
   const list=a=>{
-   const p=a.filter(r=>!r.localizado),d=a.filter(r=>r.localizado);
+   const p=pend(a),d=a.filter(r=>r.localizado);
    return (!a.length?'<p class="rc-none">Nadie registrado dentro.</p>':"")+(p.length?"<ul>"+p.map(row).join("")+"</ul>":(a.length?'<p class="rc-none">✓ Todos localizados.</p>':""))+(d.length?'<div class="rc-dh">Localizados ('+d.length+')</div><ul>'+d.map(row).join("")+"</ul>":"");
   };
-  const zone=(z,txt,state,color)=>z.rects.map(([x1,y1,x2,y2])=>`<div class="rc-z ${state}" style="left:${x1/IMG_W*100}%;top:${y1/IMG_H*100}%;width:${(x2-x1)/IMG_W*100}%;height:${(y2-y1)/IMG_H*100}%;--c:${color}"><span class="rc-b" style="color:${state==="done"?"#fff":z.txt}">${txt}<small>${z.k}</small></span></div>`).join("");
-  const zoneScr=z=>{const a=g[z.k],p=a.filter(r=>!r.localizado).length;return zone(z,a.length&&!p?"✓":p,!a.length?"":p?"act":"done",a.length&&!p?"#1F9D63":z.color)};
-  const zonePrt=z=>zone(z,g[z.k].length,g[z.k].length?"act":"",z.color);
-  const card=z=>{const a=g[z.k],p=a.filter(r=>!r.localizado).length;return `<div class="rc-card" style="--c:${z.color}"><div class="rc-ch"><span class="rc-chip" style="color:${z.txt}">${z.k}</span><b class="rc-num">${p}</b><span class="rc-of">por localizar de ${a.length}</span><span class="rc-where">· Buscar en: ${z.zona}</span></div>${list(a)}</div>`};
-  const extra=(title,a)=>{if(!a.length)return"";const p=a.filter(r=>!r.localizado).length;return `<div class="rc-card" style="--c:#8A94A6"><div class="rc-ch"><span class="rc-chip" style="color:#fff">${title}</span><b class="rc-num">${p}</b><span class="rc-of">por localizar de ${a.length}</span><span class="rc-where">· Sin zona asignada en el plano</span></div>${list(a)}</div>`};
+  /* área de cada persona: sale de la ficha del trabajador fijo (mismo nombre y empresa) */
+  const areaOf=(z,r)=>{
+   if(!z.areas||r.tipo!=="trabajador")return"";
+   const f=fijosRaw.find(f=>f.empresa===z.k&&norm(f.nombre)===norm(r.nombre||""));
+   return f&&z.areas.some(a=>a.k===f.area)?f.area:"";
+  };
+  /* bloques de búsqueda: zona sin áreas = 1 bloque; con áreas = 1 por área + "sin área" */
+  const blocksOf=z=>{
+   const a=g[z.k];
+   if(!z.areas)return[{title:z.k,short:z.k,where:z.zona,rects:z.rects,list:a}];
+   const bs=z.areas.map(ar=>({title:z.k+" · "+ar.k,short:ar.k,tag:ar.tag,where:ar.k+" ("+z.zona+")",rects:ar.rects,list:a.filter(r=>areaOf(z,r)===ar.k)}));
+   bs.push({un:true,title:z.k+" · Sin área",short:"Sin área asignada",where:z.zona+" · toda la zona, sin área asignada",list:a.filter(r=>!areaOf(z,r))});
+   return bs;
+  };
+  const pos=([x1,y1,x2,y2])=>`left:${x1/IMG_W*100}%;top:${y1/IMG_H*100}%;width:${(x2-x1)/IMG_W*100}%;height:${(y2-y1)/IMG_H*100}%`;
+  const zoneMap=(z,prt)=>{
+   let h=z.areas?z.rects.map(r=>`<div class="rc-z out" style="${pos(r)};--c:${z.color}"></div>`).join(""):"";
+   blocksOf(z).forEach(b=>{
+    const n=prt?b.list.length:pend(b.list).length;
+    if(b.un){
+     if(n){const [x1,y1,x2]=z.rects[0];h+=`<div class="rc-pillw" style="left:${x1/IMG_W*100}%;top:${(y1+4)/IMG_H*100}%;width:${(x2-x1)/IMG_W*100}%"><span class="rc-pill" style="background:${z.color};color:${z.txt}">Sin área: ${n}</span></div>`}
+     return;
+    }
+    const done=!prt&&b.list.length&&!n,state=!b.list.length?"":done?"done":"act",txt=done?"✓":n,color=done?"#1F9D63":z.color;
+    h+=b.rects.map(r=>`<div class="rc-z ${state}" style="${pos(r)};--c:${color}"><span class="rc-b" style="color:${done?"#fff":z.txt}">${txt}<small>${b.tag||z.k}</small></span></div>`).join("");
+   });
+   return h;
+  };
+  const card=z=>{
+   const a=g[z.k],bs=blocksOf(z),multi=bs.length>1;
+   const inner=multi?bs.filter(b=>!b.un||b.list.length).map(b=>`<div class="rc-sub"><div class="rc-sh2"><b>${esc(b.short)}</b> · ${pend(b.list).length} por localizar de ${b.list.length}${b.un?"":" <span>· Buscar en: "+esc(b.where)+"</span>"}${b.un?" <span>· buscar en toda la zona</span>":""}</div>${list(b.list)}</div>`).join(""):list(a);
+   return `<div class="rc-card" style="--c:${z.color}"><div class="rc-ch"><span class="rc-chip" style="color:${z.txt}">${z.k}</span><b class="rc-num">${pend(a).length}</b><span class="rc-of">por localizar de ${a.length}</span><span class="rc-where">· ${multi?z.zona+" (según su área)":"Buscar en: "+z.zona}</span></div>${inner}</div>`;
+  };
+  const extra=(title,a)=>{if(!a.length)return"";return `<div class="rc-card" style="--c:#8A94A6"><div class="rc-ch"><span class="rc-chip" style="color:#fff">${title}</span><b class="rc-num">${pend(a).length}</b><span class="rc-of">por localizar de ${a.length}</span><span class="rc-where">· Sin zona asignada en el plano</span></div>${list(a)}</div>`};
   /* hoja para imprimir: cuadros vacíos para marcar con bolígrafo */
   const prow=r=>`<tr><td><span class="pk">${r.localizado?"✓":""}</span></td><td><b>${esc(r.nombre)}</b></td><td>${sub(r)}${hm(r.entrada)}${r.fecha!==today?" ("+esc(dd(r.entrada))+")":""}</td><td class="pl"></td></tr>`;
-  const ptab=(title,where,color,a)=>`<div class="rc-pc" style="--c:${color}"><div class="rc-ph"><b>${title}</b> · ${a.length} · ${where}</div><table class="rc-pt"><thead><tr><th style="width:36px"></th><th>Nombre</th><th>Entrada</th><th>Hora localizado</th></tr></thead><tbody>${a.length?a.map(prow).join(""):'<tr><td colspan="4">Nadie registrado.</td></tr>'}</tbody></table></div>`;
+  const ptab=(title,where,color,a)=>`<div class="rc-pc" style="--c:${color}"><div class="rc-ph"><b>${esc(title)}</b> · ${a.length} · ${esc(where)}</div><table class="rc-pt"><thead><tr><th style="width:36px"></th><th>Nombre</th><th>Entrada</th><th>Hora localizado</th></tr></thead><tbody>${a.length?a.map(prow).join(""):'<tr><td colspan="4">Nadie registrado.</td></tr>'}</tbody></table></div>`;
+  const sheetTabs=ZONAS.map(z=>blocksOf(z).filter(b=>!b.un||b.list.length).map(b=>ptab(b.title,"Buscar en: "+b.where,z.color,b.list)).join("")).join("");
   const mb=box.closest(".mbox"),st=mb?mb.scrollTop:0;
   box.innerHTML=`<div class="rc-screen">
   <div class="rc-total${miss||!total?"":" all"}"><b>${total&&!miss?"✓":miss}</b><span>${total&&!miss?"¡Todos localizados!":(miss===1?"persona por localizar":"personas por localizar")}<br><small>${found} de ${total} localizados · ${total-nv} trabajadores · ${nv} ${nv===1?"visita":"visitas"}</small></span><div class="rc-bar"><i style="width:${total?found/total*100:0}%"></i></div></div>
-  <div class="rc-cols"><div><div class="rc-img"><img src="${LAYOUT}" alt="Plano del almacén">${ZONAS.map(zoneScr).join("")}</div></div>
+  <div class="rc-cols"><div><div class="rc-img"><img src="${LAYOUT}" alt="Plano del almacén">${ZONAS.map(z=>zoneMap(z,false)).join("")}</div></div>
   <div>${ZONAS.map(card).join("")}${extra("OTROS",g.OTROS)}${extra("VISITAS",g.VISITAS)}</div></div>
   <p class="hint" style="margin-top:8px">Toca a cada persona cuando la encuentres: pasa a «Localizados» y se ve en todos los móviles a la vez. Se basa en las entradas sin salida registrada: quien salió sin fichar sigue contando y quien entró sin registrarse no aparece. ⚠ marca entradas de días anteriores: verifícalas.</p></div>
   <div class="rc-sheet"><div class="rc-sh"><h2>Hoja de recuento · Yusen Logistics Barcelona</h2><p>Impreso el ${new Date().toLocaleString("es-ES")} · ${total} personas registradas dentro (${found} ya localizadas)</p></div>
-  <div class="rc-cols"><div><div class="rc-img"><img src="${LAYOUT}" alt="Plano del almacén">${ZONAS.map(zonePrt).join("")}</div></div>
-  <div>${ZONAS.map(z=>ptab(z.k,"Buscar en: "+z.zona,z.color,g[z.k])).join("")}${g.OTROS.length?ptab("OTROS","Sin zona asignada","#8A94A6",g.OTROS):""}${g.VISITAS.length?ptab("VISITAS","Sin zona asignada","#8A94A6",g.VISITAS):""}</div></div></div>`;
+  <div class="rc-cols"><div><div class="rc-img"><img src="${LAYOUT}" alt="Plano del almacén">${ZONAS.map(z=>zoneMap(z,true)).join("")}</div></div>
+  <div>${sheetTabs}${g.OTROS.length?ptab("OTROS","Sin zona asignada","#8A94A6",g.OTROS):""}${g.VISITAS.length?ptab("VISITAS","Sin zona asignada","#8A94A6",g.VISITAS):""}</div></div></div>`;
   if(mb)mb.scrollTop=st;
  }
  /* ---- Pestañas ---- */
  const tabs=a=>{$("#pane-a").style.display=a?"block":"none";$("#pane-f").style.display=a?"none":"block";$("#tab-a").classList.toggle("on",a);$("#tab-f").classList.toggle("on",!a)};
  $("#tab-a").onclick=()=>tabs(true);$("#tab-f").onclick=()=>tabs(false);
  /* ---- Trabajadores fijos ---- */
+ const fxAreaOpts=(c,sel)=>'<option value="">Sin asignar</option>'+areasOf(c).map(x=>`<option value="${esc(x.k)}"${x.k===sel?" selected":""}>${esc(x.k)}</option>`).join("");
+ function fxForm(){const c=$("#fx-co").value,has=areasOf(c).length>0;$("#fx-aw").style.display=has?"block":"none";$("#fx-ar").innerHTML=fxAreaOpts(c,"")}
+ $("#fx-co").onchange=fxForm;fxForm();
  function drawFijos(){
   const box=$("#fx-list");if(!box)return;
   box.innerHTML=EMPRESAS_FIJAS.map(c=>{
-   const a=fijosRaw.filter(r=>r.empresa===c).sort((x,y)=>x.nombre.localeCompare(y.nombre,"es"));
+   const a=fijosRaw.filter(r=>r.empresa===c).sort((x,y)=>x.nombre.localeCompare(y.nombre,"es")),has=areasOf(c).length>0;
    return `<div class="h2">${c} <span style="font-weight:600;font-size:14px;opacity:.6">(${a.length})</span></div><div class="tw"><table><tbody>`+
-    (a.map(r=>`<tr><td style="width:100%">${esc(r.nombre)}</td><td><button class="abtn nv" data-fdel="${esc(r.id)}">Eliminar</button></td></tr>`).join("")||'<tr><td>Sin trabajadores guardados.</td></tr>')+`</tbody></table></div>`;
+    (a.map(r=>`<tr><td style="width:100%">${esc(r.nombre)}</td>${has?`<td><select class="fx-as" data-farea="${esc(r.id)}" aria-label="Área de ${esc(r.nombre)}">${fxAreaOpts(c,r.area||"")}</select></td>`:""}<td><button class="abtn nv" data-fdel="${esc(r.id)}">Eliminar</button></td></tr>`).join("")||'<tr><td>Sin trabajadores guardados.</td></tr>')+`</tbody></table></div>`;
   }).join("");
  }
- onFijos=drawFijos;drawFijos();
+ $("#fx-list").onchange=async e=>{
+  const sel=e.target.closest("[data-farea]");if(!sel)return;
+  try{await updateDoc(doc(db,"trabajadores_fijos",sel.dataset.farea),{area:sel.value})}
+  catch(x){console.error(x);$("#fx-err").textContent="No se pudo cambiar el área. Inténtalo de nuevo."}
+ };
+ onFijos=()=>{drawFijos();drawRC()};drawFijos();
  $("#fx-list").onclick=async e=>{
   const b=e.target.closest("[data-fdel]");if(!b)return;
   const r=fijosRaw.find(x=>x.id===b.dataset.fdel);if(!r||!confirm("¿Eliminar a "+r.nombre+" de "+r.empresa+"?"))return;
@@ -597,7 +647,7 @@ function staff(){
   if(!n){err.textContent="Escribe el nombre del trabajador.";return}
   if(fijosRaw.some(r=>r.empresa===c&&norm(r.nombre)===norm(n))){err.textContent="Ese trabajador ya está guardado en "+c+".";return}
   const btn=$("#fx-add");btn.disabled=true;
-  try{await addDoc(colF,{empresa:c,nombre:n});$("#fx-n").value="";$("#fx-n").focus()}
+  try{await addDoc(colF,{empresa:c,nombre:n,area:areasOf(c).length?$("#fx-ar").value:""});$("#fx-n").value="";$("#fx-n").focus()}
   catch(x){console.error(x);err.textContent="No se pudo guardar. Revisa los permisos de Firebase (colección trabajadores_fijos)."}
   btn.disabled=false;
  };
