@@ -62,6 +62,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid v
  #inf-sheet td img{display:block;max-width:34mm;max-height:15mm;width:auto;height:auto}
  #inf-sheet .is-foot{font-size:11px;margin-top:8px}
 }
+/* KPIs ampliados */
+.kpi.r{border-color:#D32F2F}.kpi.r b{color:#D32F2F}
+.late{background:#FDECEC;border:3px solid #D32F2F;color:#8E1B1B;border-radius:12px;padding:12px 16px;font-weight:800;margin-bottom:12px}
+.kx-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:700px){.kx-cols{grid-template-columns:1fr}}
+.kx-bars{display:flex;align-items:flex-end;gap:3px;height:130px;background:#fff;border-radius:12px;padding:10px 10px 4px}
+.kx-b{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+.kx-b i{display:block;width:100%;background:var(--orange);border-radius:3px 3px 0 0;min-height:1px}.kx-b span{font-size:10px;height:14px;opacity:.6}
 /* Firma */
 .sg-box{position:relative;border:2px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
 #sg-cv{display:block;width:100%;height:clamp(190px,36vh,300px);touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
@@ -216,7 +223,8 @@ body.rc-print #v-staff .panel>*:not(#rc){display:none!important}body.rc-print #r
   <section class="view" id="v-sign">
     <div class="card">
       <h1 data-t="sgT" style="font-size:30px"></h1>
-      <p class="sub" data-t="sgH" style="margin-bottom:14px"></p>
+      <p class="sub" data-t="sgH" style="margin-bottom:8px"></p>
+      <p data-t="sgRules" style="font-weight:700;font-size:14px;line-height:1.35;margin:0 0 12px"></p>
       <div class="sg-box"><canvas id="sg-cv"></canvas><span class="sg-x" aria-hidden="true">✕</span><span class="sg-ph" data-t="sgHere"></span></div>
       <p class="hint" data-t="sgNote" style="font-size:13px;opacity:.7;margin-top:8px"></p>
       <div class="err" id="sg-err" role="alert"></div>
@@ -257,6 +265,7 @@ import {getFirestore,collection,addDoc,updateDoc,deleteDoc,doc,getDocs,query,whe
 const firebaseConfig={apiKey:"AIzaSyAcK6twef3fljQXy-TC5iaQTRBhhHV45QA",authDomain:"yusen-accesos.firebaseapp.com",projectId:"yusen-accesos",appId:"1:569296695889:web:c03376482faa5faeb57e70"};
 const STAFF_PIN="2468";            // cambia este PIN
 const COLECCION="registros";
+const HORA_LIMITE=22;            // aviso si hay gente dentro a partir de esta hora (y hasta las 5:00)
 /* =========================== */
 
 const db=getFirestore(initializeApp(firebaseConfig)),col=collection(db,COLECCION),colF=collection(db,"trabajadores_fijos");
@@ -333,6 +342,8 @@ ar:{sgT:"وقّع على تسجيلك",sgH:"وقّع بإصبعك داخل ال�
 ur:{sgT:"اپنے اندراج پر دستخط کریں",sgH:"انگلی سے خانے کے اندر دستخط کریں۔",sgHere:"یہاں دستخط کریں",sgClear:"مٹائیں",sgOk:"دستخط کی تصدیق کریں",sgEmpty:"آگے بڑھنے سے پہلے خانے میں دستخط کریں۔",sgNote:"آپ کے دستخط آپ کے اندراج کے ساتھ محفوظ کیے جائیں گے۔"}
 };
 Object.keys(SG).forEach(k=>Object.assign(L[k],SG[k]));
+const SR={es:"Al firmar declaro que he leído las normas de seguridad: chaleco y botas obligatorios en el almacén.",ca:"En signar, declaro que he llegit les normes de seguretat: armilla i botes obligatòries al magatzem.",en:"By signing, I confirm that I have read the safety rules: vest and safety boots are mandatory in the warehouse.",fr:"En signant, je déclare avoir lu les règles de sécurité : gilet et chaussures de sécurité obligatoires dans l'entrepôt.",pt:"Ao assinar, declaro que li as normas de segurança: colete e botas de segurança obrigatórios no armazém.",ro:"Prin semnare, declar că am citit normele de siguranță: vestă și bocanci de protecție obligatorii în depozit.",ja:"署名することで、安全ルール（倉庫内では安全ベストと安全靴の着用が必須）を読んだことを確認します。",ar:"بتوقيعي أقرّ بأنني قرأت قواعد السلامة: السترة وحذاء السلامة إلزاميان في المستودع.",ur:"دستخط کر کے میں تصدیق کرتا/کرتی ہوں کہ میں نے حفاظتی قواعد پڑھ لیے ہیں: گودام میں حفاظتی جیکٹ اور جوتے لازمی ہیں۔"};
+Object.keys(SR).forEach(k=>L[k].sgRules=SR[k]);
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const norm=s=>s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/\s+/g," ").trim();
@@ -579,7 +590,7 @@ $("#go").onclick=async()=>{
   const open=await getDocs(query(col,where("key","==",key),where("abierto","==",true)));
   if(mode==="in"){
    if(!open.empty){err.textContent=t("already");btn.disabled=false;return}
-   const saved=await signAndSave(async firma=>{now=new Date();await addDoc(col,{tipo,nombre:n,empresa:c,motivo:w?"":r,key,fecha:ymd(now),entrada:Timestamp.fromDate(now),salida:null,abierto:true,idioma:lang,firma})});
+   const saved=await signAndSave(async firma=>{now=new Date();await addDoc(col,{tipo,nombre:n,empresa:c,motivo:w?"":r,key,fecha:ymd(now),entrada:Timestamp.fromDate(now),salida:null,abierto:true,idioma:lang,firma,normas:true})});
    if(!saved){btn.disabled=false;return}
   }else{
    if(open.empty){err.textContent=t("noOpen");btn.disabled=false;return}
@@ -610,7 +621,8 @@ function staff(){
  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><h1 style="font-size:28px">Panel de accesos</h1><button class="link noprint" id="sx" style="color:var(--navy)">Cerrar sesión</button></div>
  <div class="seg noprint" style="max-width:440px;margin:14px 0 6px"><button id="tab-a" class="on">Accesos</button><button id="tab-f">Trabajadores fijos</button></div>
  <div id="pane-a">
- <div class="kpis"><div class="kpi g"><b id="k1">0</b><span>Dentro ahora</span></div><div class="kpi o"><b id="k2">0</b><span>Visitas dentro</span></div><div class="kpi"><b id="k3">0</b><span>Trabajadores dentro</span></div><div class="kpi"><b id="k4">0</b><span>Salidas en el periodo</span></div></div>
+ <div class="kpis"><div class="kpi g"><b id="k1">0</b><span>Dentro ahora</span></div><div class="kpi o"><b id="k2">0</b><span>Visitas dentro</span></div><div class="kpi"><b id="k3">0</b><span>Trabajadores dentro</span></div><div class="kpi"><b id="k4">0</b><span>Entradas del periodo</span></div></div>
+ <div id="kpi-x"></div>
  <div class="h2">Dentro ahora</div><div class="tw"><table><thead><tr><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Firma</th><th class="noprint">Acción</th></tr></thead><tbody id="tb-in"></tbody></table></div>
  <div class="h2">Informe</div>
  <div class="filters"><div><label>Desde</label><input type="date" id="f1" value="${today}"></div><div><label>Hasta</label><input type="date" id="f2" value="${today}"></div>
@@ -788,17 +800,37 @@ function staff(){
  const sig=r=>okSig(r.firma)?'<img class="sg-th" src="'+r.firma+'" alt="Firma" data-sig="'+esc(r.id)+'">':"—";
  const tag=x=>x==="visita"?'<span class="tag t-v">Visita</span>':'<span class="tag t-w">Trabajador</span>';
  const dur=r=>{if(!r.salida)return"";const m=Math.round((r.salida.toMillis()-r.entrada.toMillis())/60000);return Math.floor(m/60)+" h "+String(m%60).padStart(2,"0")+" min"};
+ function drawKpi(){
+  const box=$("#kpi-x");if(!box)return;
+  const now=Date.now(),R=rows,msOf=r=>(r.salida?r.salida.toMillis():now)-r.entrada.toMillis();
+  const avg=a=>{const c=a.filter(r=>!r.abierto);return c.length?Math.round(c.reduce((s,r)=>s+msOf(r),0)/c.length/60000):null};
+  const fm=m=>m==null?"—":Math.floor(m/60)+" h "+p2(m%60)+" min";
+  const g={};R.filter(r=>!r.abierto).forEach(r=>{const k=r.tipo==="visita"?"VISITAS":((r.empresa||"").split(" · ")[0].trim().toUpperCase()||"OTROS");g[k]=(g[k]||0)+msOf(r)});
+  const ev=[];R.forEach(r=>{ev.push([r.entrada.toMillis(),1],[r.salida?r.salida.toMillis():now,-1])});
+  ev.sort((x,y)=>x[0]-y[0]||x[1]-y[1]);let c=0,pk=0,pt=0;ev.forEach(e=>{c+=e[1];if(c>pk){pk=c;pt=e[0]}});
+  const hs=Array(24).fill(0);R.forEach(r=>hs[r.entrada.toDate().getHours()]++);const mx=Math.max(1,...hs);
+  const hh=new Date().getHours(),late=inside.length>0&&(hh>=HORA_LIMITE||hh<5),old=inside.filter(r=>r.fecha!==ymd(new Date())).length,ed=R.filter(r=>r.editado).length;
+  const hrs=Object.entries(g).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<tr><td><b>${esc(k)}</b></td><td>${fm(Math.round(v/60000))}</td></tr>`).join("")||'<tr><td>Sin salidas en el periodo.</td></tr>';
+  box.innerHTML=(late?`<div class="late">⚠ ${inside.length} ${inside.length===1?"persona sigue":"personas siguen"} dentro pasadas las ${HORA_LIMITE}:00</div>`:"")+
+  `<div class="kpis"><div class="kpi"><b>${fm(avg(R.filter(r=>r.tipo==="visita")))}</b><span>Permanencia media · visitas</span></div>
+  <div class="kpi"><b>${fm(avg(R.filter(r=>r.tipo!=="visita")))}</b><span>Permanencia media · trabajadores</span></div>
+  <div class="kpi o"><b>${pk}</b><span>Pico de personas a la vez${pk?" · "+new Date(pt).toLocaleString("es-ES",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}):""}</span></div>
+  <div class="kpi${old?" r":""}"><b>${old}</b><span>Entradas sin salida de días anteriores</span></div>
+  <div class="kpi"><b>${R.length?Math.round(ed/R.length*100):0}%</b><span>Registros editados a mano</span></div></div>
+  <div class="kx-cols"><div><div class="h2">Horas por empresa</div><div class="tw"><table><tbody>${hrs}</tbody></table></div></div>
+  <div><div class="h2">Entradas por hora</div><div class="kx-bars">${hs.map((n,h)=>`<div class="kx-b" title="${p2(h)}:00 · ${n}"><i style="height:${n/mx*100}%"></i><span>${h%3?"":h}</span></div>`).join("")}</div></div></div>`;
+ }
  function drawIn(){
   const a=[...inside].sort((x,y)=>x.entrada.toMillis()-y.entrada.toMillis());
-  $("#k1").textContent=a.length;$("#rc-n").textContent=a.length;drawRC();$("#k2").textContent=a.filter(r=>r.tipo==="visita").length;$("#k3").textContent=a.filter(r=>r.tipo==="trabajador").length;
-  $("#tb-in").innerHTML=a.map(r=>`<tr><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${dd(r.entrada)} ${hm(r.entrada)}</td><td>${sig(r)}</td><td class="noprint"><button class="abtn" data-out="${esc(r.id)}">Marcar salida</button></td></tr>`).join("")||'<tr><td colspan="7">Nadie dentro ahora.</td></tr>';
+  $("#k1").textContent=a.length;drawKpi();$("#rc-n").textContent=a.length;drawRC();$("#k2").textContent=a.filter(r=>r.tipo==="visita").length;$("#k3").textContent=a.filter(r=>r.tipo==="trabajador").length;
+  $("#tb-in").innerHTML=a.map(r=>`<tr><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${r.fecha!==ymd(new Date())?'<i class="rc-old">⚠ </i>':""}${dd(r.entrada)} ${hm(r.entrada)}</td><td>${sig(r)}</td><td class="noprint"><button class="abtn" data-out="${esc(r.id)}">Marcar salida</button></td></tr>`).join("")||'<tr><td colspan="7">Nadie dentro ahora.</td></tr>';
  }
  function drawRep(){
   const ft=$("#ft").value,fs=$("#fs").value;
   const a=rows.filter(r=>(!ft||r.tipo===ft)&&(!fs||(fs==="in")===r.abierto)).sort((x,y)=>y.entrada.toMillis()-x.entrada.toMillis());
-  $("#k4").textContent=a.filter(r=>!r.abierto).length;
+  $("#k4").textContent=a.length;
   $("#tb-rep").innerHTML=a.map(r=>`<tr><td>${esc(r.fecha)}</td><td>${tag(r.tipo)}</td><td>${esc(r.nombre)}</td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td>${hm(r.entrada)}</td><td>${r.abierto?'<span class="in">Dentro</span>':hm(r.salida)}${r.editado?' <span class="ed" title="Editado manualmente">✎</span>':''}</td><td>${dur(r)}</td><td>${sig(r)}</td><td class="noprint"><button class="abtn nv" data-edit="${esc(r.id)}">Editar</button></td></tr>`).join("")||'<tr><td colspan="10">Sin registros para este filtro.</td></tr>';
-  drawRep.cur=a;
+  drawRep.cur=a;drawKpi();
  }
  function sub(){
   unRep?.();const f1=$("#f1").value,f2=$("#f2").value;
