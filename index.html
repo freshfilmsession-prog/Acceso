@@ -92,7 +92,8 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.rc-big{animation:none}}
 .rcbox{max-width:1000px}
 .rc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;margin-bottom:12px}
-.rc-total{display:flex;align-items:center;gap:16px;background:#FDECEC;border:3px solid #D32F2F;border-radius:14px;padding:12px 18px;margin-bottom:14px}
+.rc-total{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;background:#FDECEC;border:3px solid #D32F2F;border-radius:14px;padding:12px 18px;margin-bottom:14px;box-shadow:0 10px 0 #fff}.rc-total.all{background:#E8F7EF;border-color:var(--ok)}.rc-total.all>b{color:var(--ok)}
+.rc-bar{flex-basis:100%;height:10px;border-radius:6px;background:#F5C9C9;overflow:hidden}.rc-total.all .rc-bar{background:#BFE6D1}.rc-bar i{display:block;height:100%;background:var(--ok);transition:width .3s}
 .rc-total>b{font-size:56px;font-weight:900;line-height:1;color:#D32F2F}.rc-total span{font-weight:800;font-size:18px}.rc-total small{font-weight:600;font-size:14px;opacity:.8}
 .rc-cols{display:grid;grid-template-columns:minmax(220px,360px) 1fr;gap:16px;align-items:start}
 .rc-img{position:relative;border:2px solid var(--line);border-radius:10px;overflow:hidden}.rc-img img{display:block;width:100%}
@@ -105,11 +106,24 @@ td{padding:10px 11px;border-bottom:1px solid var(--line);white-space:nowrap}
 .rc-card{background:#fff;border:2px solid var(--line);border-left:10px solid var(--c);border-radius:12px;padding:10px 14px;margin-bottom:10px}
 .rc-ch{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .rc-chip{background:var(--c);border-radius:8px;padding:3px 12px;font-weight:900;font-size:16px}.rc-num{font-size:30px;font-weight:900}.rc-where{font-weight:700;font-size:14px;opacity:.85}
-.rc-card ul{list-style:none;padding:0;margin:8px 0 0}.rc-card li{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-top:1px solid var(--line);font-size:15px}.rc-card li span{opacity:.75;white-space:nowrap;font-size:13px}
+.rc-card ul{list-style:none;padding:0;margin:8px 0 0}
+.rc-p{display:flex;align-items:center;gap:12px;min-height:56px;padding:8px 6px;border-top:1px solid var(--line);cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;font-size:17px}
+.rc-p b{flex:1}.rc-p>span:last-child{opacity:.75;white-space:nowrap;font-size:13px;text-align:right}
+.rc-ck{flex:0 0 34px;height:34px;border:3px solid var(--navy);border-radius:9px;display:grid;place-items:center;font:900 22px var(--f);color:#fff;background:#fff}
+.rc-p.ok{background:#E8F7EF}.rc-p.ok .rc-ck{background:var(--ok);border-color:var(--ok)}.rc-p.ok b{opacity:.7}
+.rc-dh{margin:12px 0 0;font-weight:800;font-size:13px;color:var(--ok);text-transform:uppercase;letter-spacing:.5px}
+.rc-of{font-size:14px;font-weight:600;opacity:.6}
+.rc-z.done{opacity:1}.rc-z.done::before{opacity:.22}
+.rc-sheet{display:none}
 .rc-none{margin-top:6px;font-size:14px;opacity:.65}.rc-old{color:#C62828;font-style:normal;font-weight:800}
 @media(max-width:700px){.rc-cols{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.rc-z.act::before{animation:none}}
-@media print{body.rc-print #v-staff .panel>*:not(#rc){display:none!important}body.rc-print #rc{display:block!important;position:static;background:#fff;padding:0}body.rc-print .rcbox{max-height:none;overflow:visible;max-width:none}.rcbox{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+@media print{@page{size:A4;margin:12mm}body.rc-print .rc-screen{display:none!important}body.rc-print .rc-sheet{display:block}
+.rc-sh h2{font-size:22px}.rc-sh p{font-size:12px;margin:2px 0 10px}
+.rc-pc{break-inside:avoid;margin-bottom:12px}.rc-ph{font-size:14px;padding:5px 8px;background:#eee;border-left:8px solid var(--c)}
+.rc-pt{width:100%;border-collapse:collapse;font-size:13px}.rc-pt th{background:#fff;color:#000;border-bottom:2px solid #000;padding:4px}.rc-pt td{border-bottom:1px solid #999;padding:6px 4px;height:36px;white-space:normal}
+.pk{display:inline-block;width:24px;height:24px;border:2.5px solid #000;border-radius:4px;text-align:center;line-height:20px;font-weight:900}.pl{width:26%}
+body.rc-print #v-staff .panel>*:not(#rc){display:none!important}body.rc-print #rc{display:block!important;position:static;background:#fff;padding:0}body.rc-print .rcbox{max-height:none;overflow:visible;max-width:none}.rcbox{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
 @media(max-width:560px){.grid{grid-template-columns:1fr}}
 @media print{body{background:#fff}header,footer,.filters,.noprint,.modal{display:none!important}#v-staff{color:#000}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
@@ -500,7 +514,7 @@ function staff(){
  </div></div>
  <div class="modal" id="rc" hidden><div class="mbox rcbox">
   <div class="rc-top"><div><h2>Recuento de personal</h2><p class="hint" id="rc-time"></p></div>
-  <div class="noprint" style="display:flex;gap:8px"><button class="abtn nv" id="rc-print">Imprimir</button><button class="abtn" id="rc-close">Cerrar</button></div></div>
+  <div class="noprint" style="display:flex;gap:8px"><button class="abtn nv" id="rc-reset">Borrar marcas</button><button class="abtn nv" id="rc-print">Imprimir hoja</button><button class="abtn" id="rc-close">Cerrar</button></div></div>
   <div id="rc-body"></div>
  </div></div>
  </div>`;
@@ -513,6 +527,18 @@ function staff(){
  $("#rc-close").onclick=rcClose;
  $("#rc").onclick=e=>{if(e.target.id==="rc")rcClose()};
  $("#rc-print").onclick=()=>{document.body.classList.add("rc-print");window.onafterprint=()=>document.body.classList.remove("rc-print");print()};
+ const toggleLoc=async id=>{
+  const r=inside.find(x=>x.id===id);if(!r)return;
+  try{await updateDoc(doc(db,COLECCION,id),{localizado:!r.localizado,localizadoEn:r.localizado?null:Timestamp.now()})}
+  catch(x){console.error(x);alert("No se pudo guardar la marca. Comprueba la conexión.")}
+ };
+ $("#rc-body").onclick=e=>{const li=e.target.closest("[data-loc]");if(li)toggleLoc(li.dataset.loc)};
+ $("#rc-body").onkeydown=e=>{if(e.key==="Enter"||e.key===" "){const li=e.target.closest("[data-loc]");if(li){e.preventDefault();toggleLoc(li.dataset.loc)}}};
+ $("#rc-reset").onclick=async()=>{
+  const m=inside.filter(r=>r.localizado);
+  if(!m.length||!confirm("¿Borrar las marcas de "+m.length+" personas y empezar un recuento nuevo?"))return;
+  try{await Promise.all(m.map(r=>updateDoc(doc(db,COLECCION,r.id),{localizado:false,localizadoEn:null})))}catch(x){console.error(x);alert("No se pudieron borrar las marcas.")}
+ };
  function drawRC(){
   const box=$("#rc-body");if(!box||$("#rc").hidden)return;
   const today=ymd(new Date()),g={CTC:[],NWT:[],ETT:[],OTROS:[],VISITAS:[]};
@@ -521,20 +547,32 @@ function staff(){
    if(k==="CTT")k="CTC";           /* registros antiguos */
    (g[k]||g.OTROS).push(r);
   });
-  const total=inside.length,nv=g.VISITAS.length;
-  const person=r=>{
-   const sub=r.tipo==="trabajador"&&(r.empresa||"").includes(" · ")?esc(r.empresa.split(" · ")[1])+" · ":"";
-   const old=r.fecha!==today?'<i class="rc-old">⚠ entró el '+esc(dd(r.entrada))+'</i> ':"";
-   return `<li><b>${esc(r.nombre)}</b><span>${sub}${old}${hm(r.entrada)}</span></li>`;
+  const total=inside.length,nv=g.VISITAS.length,found=inside.filter(r=>r.localizado).length,miss=total-found;
+  const sub=r=>r.tipo==="trabajador"&&(r.empresa||"").includes(" · ")?esc(r.empresa.split(" · ")[1])+" · ":"";
+  const old=r=>r.fecha!==today?'<i class="rc-old">⚠ entró el '+esc(dd(r.entrada))+'</i> ':"";
+  const row=r=>`<li class="rc-p${r.localizado?" ok":""}" data-loc="${esc(r.id)}" role="checkbox" aria-checked="${!!r.localizado}" tabindex="0"><span class="rc-ck">${r.localizado?"✓":""}</span><b>${esc(r.nombre)}</b><span>${r.localizado?"localizado "+hm(r.localizadoEn):sub(r)+old(r)+hm(r.entrada)}</span></li>`;
+  const list=a=>{
+   const p=a.filter(r=>!r.localizado),d=a.filter(r=>r.localizado);
+   return (!a.length?'<p class="rc-none">Nadie registrado dentro.</p>':"")+(p.length?"<ul>"+p.map(row).join("")+"</ul>":(a.length?'<p class="rc-none">✓ Todos localizados.</p>':""))+(d.length?'<div class="rc-dh">Localizados ('+d.length+')</div><ul>'+d.map(row).join("")+"</ul>":"");
   };
-  const list=a=>a.length?"<ul>"+a.map(person).join("")+"</ul>":'<p class="rc-none">Nadie registrado dentro.</p>';
-  const zone=(z,n)=>z.rects.map(([x1,y1,x2,y2])=>`<div class="rc-z${n?" act":""}" style="left:${x1/IMG_W*100}%;top:${y1/IMG_H*100}%;width:${(x2-x1)/IMG_W*100}%;height:${(y2-y1)/IMG_H*100}%;--c:${z.color}"><span class="rc-b" style="color:${z.txt}">${n}<small>${z.k}</small></span></div>`).join("");
-  const card=z=>`<div class="rc-card" style="--c:${z.color}"><div class="rc-ch"><span class="rc-chip" style="color:${z.txt}">${z.k}</span><b class="rc-num">${g[z.k].length}</b><span class="rc-where">Buscar en: ${z.zona}</span></div>${list(g[z.k])}</div>`;
-  const extra=(title,a)=>a.length?`<div class="rc-card" style="--c:#8A94A6"><div class="rc-ch"><span class="rc-chip" style="color:#fff">${title}</span><b class="rc-num">${a.length}</b><span class="rc-where">Sin zona asignada en el plano</span></div>${list(a)}</div>`:"";
-  box.innerHTML=`<div class="rc-total"><b>${total}</b><span>${total===1?"persona dentro":"personas dentro"} del almacén<br><small>${total-nv} trabajadores · ${nv} ${nv===1?"visita":"visitas"}</small></span></div>
-  <div class="rc-cols"><div><div class="rc-img"><img src="${LAYOUT}" alt="Plano del almacén">${ZONAS.map(z=>zone(z,g[z.k].length)).join("")}</div></div>
+  const zone=(z,txt,state,color)=>z.rects.map(([x1,y1,x2,y2])=>`<div class="rc-z ${state}" style="left:${x1/IMG_W*100}%;top:${y1/IMG_H*100}%;width:${(x2-x1)/IMG_W*100}%;height:${(y2-y1)/IMG_H*100}%;--c:${color}"><span class="rc-b" style="color:${state==="done"?"#fff":z.txt}">${txt}<small>${z.k}</small></span></div>`).join("");
+  const zoneScr=z=>{const a=g[z.k],p=a.filter(r=>!r.localizado).length;return zone(z,a.length&&!p?"✓":p,!a.length?"":p?"act":"done",a.length&&!p?"#1F9D63":z.color)};
+  const zonePrt=z=>zone(z,g[z.k].length,g[z.k].length?"act":"",z.color);
+  const card=z=>{const a=g[z.k],p=a.filter(r=>!r.localizado).length;return `<div class="rc-card" style="--c:${z.color}"><div class="rc-ch"><span class="rc-chip" style="color:${z.txt}">${z.k}</span><b class="rc-num">${p}</b><span class="rc-of">por localizar de ${a.length}</span><span class="rc-where">· Buscar en: ${z.zona}</span></div>${list(a)}</div>`};
+  const extra=(title,a)=>{if(!a.length)return"";const p=a.filter(r=>!r.localizado).length;return `<div class="rc-card" style="--c:#8A94A6"><div class="rc-ch"><span class="rc-chip" style="color:#fff">${title}</span><b class="rc-num">${p}</b><span class="rc-of">por localizar de ${a.length}</span><span class="rc-where">· Sin zona asignada en el plano</span></div>${list(a)}</div>`};
+  /* hoja para imprimir: cuadros vacíos para marcar con bolígrafo */
+  const prow=r=>`<tr><td><span class="pk">${r.localizado?"✓":""}</span></td><td><b>${esc(r.nombre)}</b></td><td>${sub(r)}${hm(r.entrada)}${r.fecha!==today?" ("+esc(dd(r.entrada))+")":""}</td><td class="pl"></td></tr>`;
+  const ptab=(title,where,color,a)=>`<div class="rc-pc" style="--c:${color}"><div class="rc-ph"><b>${title}</b> · ${a.length} · ${where}</div><table class="rc-pt"><thead><tr><th style="width:36px"></th><th>Nombre</th><th>Entrada</th><th>Hora localizado</th></tr></thead><tbody>${a.length?a.map(prow).join(""):'<tr><td colspan="4">Nadie registrado.</td></tr>'}</tbody></table></div>`;
+  const mb=box.closest(".mbox"),st=mb?mb.scrollTop:0;
+  box.innerHTML=`<div class="rc-screen">
+  <div class="rc-total${miss||!total?"":" all"}"><b>${total&&!miss?"✓":miss}</b><span>${total&&!miss?"¡Todos localizados!":(miss===1?"persona por localizar":"personas por localizar")}<br><small>${found} de ${total} localizados · ${total-nv} trabajadores · ${nv} ${nv===1?"visita":"visitas"}</small></span><div class="rc-bar"><i style="width:${total?found/total*100:0}%"></i></div></div>
+  <div class="rc-cols"><div><div class="rc-img"><img src="${LAYOUT}" alt="Plano del almacén">${ZONAS.map(zoneScr).join("")}</div></div>
   <div>${ZONAS.map(card).join("")}${extra("OTROS",g.OTROS)}${extra("VISITAS",g.VISITAS)}</div></div>
-  <p class="hint" style="margin-top:8px">Se basa en las entradas sin salida registrada: quien salió sin fichar sigue contando y quien entró sin registrarse no aparece. ⚠ marca entradas de días anteriores: verifícalas.</p>`;
+  <p class="hint" style="margin-top:8px">Toca a cada persona cuando la encuentres: pasa a «Localizados» y se ve en todos los móviles a la vez. Se basa en las entradas sin salida registrada: quien salió sin fichar sigue contando y quien entró sin registrarse no aparece. ⚠ marca entradas de días anteriores: verifícalas.</p></div>
+  <div class="rc-sheet"><div class="rc-sh"><h2>Hoja de recuento · Yusen Logistics Barcelona</h2><p>Impreso el ${new Date().toLocaleString("es-ES")} · ${total} personas registradas dentro (${found} ya localizadas)</p></div>
+  <div class="rc-cols"><div><div class="rc-img"><img src="${LAYOUT}" alt="Plano del almacén">${ZONAS.map(zonePrt).join("")}</div></div>
+  <div>${ZONAS.map(z=>ptab(z.k,"Buscar en: "+z.zona,z.color,g[z.k])).join("")}${g.OTROS.length?ptab("OTROS","Sin zona asignada","#8A94A6",g.OTROS):""}${g.VISITAS.length?ptab("VISITAS","Sin zona asignada","#8A94A6",g.VISITAS):""}</div></div></div>`;
+  if(mb)mb.scrollTop=st;
  }
  /* ---- Pestañas ---- */
  const tabs=a=>{$("#pane-a").style.display=a?"block":"none";$("#pane-f").style.display=a?"none":"block";$("#tab-a").classList.toggle("on",a);$("#tab-f").classList.toggle("on",!a)};
