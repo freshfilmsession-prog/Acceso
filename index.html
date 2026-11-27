@@ -44,6 +44,24 @@ input:focus,select:focus,textarea:focus,button:focus-visible{outline:3px solid v
 .warn b{display:block;font-size:20px;color:#B34E00;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
 .warn p{margin:0 auto!important;font-weight:700}
 .langs button{font-size:18px}.langs button:last-child{grid-column:1/-1}
+/* Impresión del informe: solo la tabla, apaisada y con firmas */
+#inf-sheet{display:none}
+@media print{
+ @page inf{size:A4 landscape;margin:10mm}
+ body.inf-print:not(.rc-print){display:block;min-height:0;background:#fff;color:#000}
+ body.inf-print:not(.rc-print)>*:not(#inf-sheet){display:none!important}
+ body.inf-print:not(.rc-print) #inf-sheet{display:block;page:inf;font-family:var(--f);color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ #inf-sheet h2{font-size:20px;font-weight:900;margin:0 0 3px}
+ #inf-sheet .is-meta{font-size:12px;margin:0 0 10px}
+ #inf-sheet table{width:100%;border-collapse:collapse;font-size:12px}
+ #inf-sheet thead{display:table-header-group}
+ #inf-sheet th{background:#EEF2F8;color:#000;text-align:left;padding:6px;border-bottom:2px solid #000;white-space:nowrap}
+ #inf-sheet tr{break-inside:avoid;page-break-inside:avoid}
+ #inf-sheet td{padding:5px 6px;border-bottom:1px solid #999;vertical-align:middle;white-space:normal}
+ #inf-sheet td.nw{white-space:nowrap}
+ #inf-sheet td img{display:block;max-width:34mm;max-height:15mm;width:auto;height:auto}
+ #inf-sheet .is-foot{font-size:11px;margin-top:8px}
+}
 /* Firma */
 .sg-box{position:relative;border:2px solid var(--line);border-radius:12px;background:#fff;overflow:hidden}
 #sg-cv{display:block;width:100%;height:clamp(190px,36vh,300px);touch-action:none;cursor:crosshair;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
@@ -789,7 +807,24 @@ function staff(){
  unsubs.push(onSnapshot(query(col,where("abierto","==",true)),s=>{inside=s.docs.map(d=>({id:d.id,...d.data()}));drawIn()}),()=>unRep?.());
  sub();
  ["f1","f2"].forEach(i=>$("#"+i).onchange=sub);["ft","fs"].forEach(i=>$("#"+i).onchange=drawRep);
- $("#prt").onclick=()=>print();
+ async function printInforme(){
+  const a=drawRep.cur||[],f1=$("#f1").value,f2=$("#f2").value,fd=s=>s.split("-").reverse().join("/"),opt=id=>$("#"+id).selectedOptions[0].textContent;
+  const meta=[f1===f2?"Fecha: "+fd(f1):"Del "+fd(f1)+" al "+fd(f2)];
+  if($("#ft").value)meta.push("Tipo: "+opt("ft"));
+  if($("#fs").value)meta.push("Estado: "+opt("fs"));
+  meta.push(a.length+(a.length===1?" registro":" registros"),"Impreso el "+new Date().toLocaleString("es-ES"));
+  const T={visita:"Visita",trabajador:"Trabajador"};
+  const body=a.map(r=>`<tr><td class="nw">${esc(dd(r.entrada))}</td><td>${esc(T[r.tipo]||r.tipo)}</td><td><b>${esc(r.nombre)}</b></td><td>${esc(r.empresa)}</td><td>${esc(r.motivo)}</td><td class="nw">${hm(r.entrada)}</td><td class="nw">${r.abierto?"Dentro":hm(r.salida)}${r.editado?" ✎":""}</td><td class="nw">${dur(r)}</td><td>${okSig(r.firma)?'<img src="'+r.firma+'" alt="Firma">':"—"}</td></tr>`).join("")||'<tr><td colspan="9">Sin registros para este filtro.</td></tr>';
+  $("#inf-sheet")?.remove();
+  const s=document.createElement("div");s.id="inf-sheet";
+  s.innerHTML=`<h2>Registro de accesos · Yusen Logistics Barcelona</h2><p class="is-meta">${meta.map(esc).join(" · ")}</p><table><thead><tr><th>Fecha</th><th>Tipo</th><th>Nombre</th><th>Empresa</th><th>Motivo</th><th>Entrada</th><th>Salida</th><th>Duración</th><th>Firma</th></tr></thead><tbody>${body}</tbody></table>${a.some(r=>r.editado)?'<p class="is-foot">✎ Hora editada manualmente.</p>':""}`;
+  document.body.appendChild(s);
+  document.body.classList.remove("rc-print");document.body.classList.add("inf-print");
+  window.onafterprint=()=>{window.onafterprint=null;s.remove();document.body.classList.remove("inf-print")};
+  await Promise.all([...s.querySelectorAll("img")].map(i=>i.decode?i.decode().catch(()=>{}):0));
+  print();
+ }
+ $("#prt").onclick=printInforme;
 
  /* ---- Editar / marcar salida manual ---- */
  function openEdit(id,quick){
